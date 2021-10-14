@@ -1,0 +1,29 @@
+Package: bbum
+Title: BBUM correction for significance testing of p values
+Version: 0.36
+Authors@R: 
+    person(given = "Peter Y.",
+           family = "Wang",
+           role = c("aut", "cre"),
+           email = "pywang@mit.edu",
+           comment = c(ORCID = "0000-0002-6129-2815",
+                       Advisor = "David P. Bartel"))
+Description: Standard multiple testing correction methods 
+    cannot distinguish dominant primary effects from 
+    background secondary effects above null. A bi-beta-uniform 
+    mixture (BBUM) model allows the modeling and correction
+    for the false discovery rate (FDR) of both null and 
+    secondary effects.
+License: MIT + file LICENSE
+Encoding: UTF-8
+LazyData: true
+Roxygen: list(markdown = TRUE)
+RoxygenNote: 7.1.2
+Imports: 
+    data.table (>= 1.14.0),
+    dplyr (>= 1.0.7),
+    ggplot2 (>= 3.3.5),
+    magrittr (>= 2.0.1),
+    purrr (>= 0.3.4),
+    tibble (>= 3.1.4),
+    tidyr (>= 1.1.3)
