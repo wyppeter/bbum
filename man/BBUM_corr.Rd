@@ -51,15 +51,12 @@ A named list with the following items:
 \itemize{
 \item \code{pvals}: Vector of input p values.
 \item \code{pBBUMs}: Vector of p values corrected for FDR by BBUM modeling.
-\item \code{BBUM.l}: Fitted \code{lambda} parameter.
-\item \code{BBUM.a}: Fitted \code{a} parameter.
-\item \code{BBUM.th}: Fitted \code{theta} parameter.
-\item \code{BBUM.r}: Fitted \code{r} parameter.
+\item \code{estim}: A named list of fitted parameter values.
+\item \code{LL}: Value of the maximized log-likelihood.
+\item \code{convergence}: Convergence code from \code{optim}.
 \item \code{outlier_trim}: Number of outliers trimmed in the background set.
 \item \code{r.passed}: Boolean for whether the fitted \code{r} value was under
 the threshold for flagging outliers.
-\item \code{BBUM.LL}: Value of the maximized log-likelihood.
-\item \code{fitdist_obj}: Fit output object of \code{optim}.
 }
 }
 \description{
@@ -90,16 +87,18 @@ increase computation time.
 }
 \examples{
 BBUM_corr(
-  pvals        = c(0.701, 0.503, 0.109, 0.0071, 0.019, 0.031, 0.0014,
-                    0.0003, 0.0001, 0.049, 0.0001,
-                    0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9,
-                    0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9),
+  pvals         = c(0.501, 0.203, 0.109, 0.071, 0.019, 0.031, 0.001,
+                    0.000021, 0.00010, 0.03910,
+                    0.0001,
+                    0.11, 0.27, 0.36, 0.43, 0.50, 0.61, 0.77, 0.87, 0.91,
+                    0.13, 0.21, 0.38, 0.42, 0.52, 0.60, 0.73, 0.81, 0.97),
   signal_set    = c(FALSE, FALSE, FALSE, FALSE, FALSE, TRUE, TRUE,
-                    TRUE, TRUE, TRUE, FALSE,
+                    TRUE,  TRUE,  TRUE,
+                    FALSE,
                     FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE,
-                    TRUE, TRUE, TRUE, TRUE, TRUE, TRUE, TRUE, TRUE, TRUE),
+                    TRUE,  TRUE,  TRUE,  TRUE,  TRUE,  TRUE,  TRUE,  TRUE,  TRUE),
   add_starts = list(c(lambda = 0.9, a = 0.6, theta = 0.1, r = 0.1)),
-  limits = list(a = c(0.50,0.75))
+  limits = list(a = c(0.1,0.7))
 )
 
 }

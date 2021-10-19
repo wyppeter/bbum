@@ -12,7 +12,7 @@ Description: Standard multiple testing correction methods
     cannot distinguish dominant primary effects from 
     background secondary effects above null. A bi-beta-uniform 
     mixture (BBUM) model allows the modeling and correction
-    for the false discovery rate (FDR) of both null and 
+    for the false discovery rate (FDR) to exclude both null and 
     secondary effects.
 License: MIT + file LICENSE
 Encoding: UTF-8

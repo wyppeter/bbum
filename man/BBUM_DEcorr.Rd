@@ -135,20 +135,23 @@ increase computation time.
 \examples{
 \dontrun{
 # Typical default run
+# DESeq2
 dds = DESeqDataSetFromMatrix(countData = cts, ...) # DESeq2
 dds = DESeq(dds)
 res = results(dds) \%>\%
   as.data.frame() \%>\%
   mutate(FCup = log2FoldChange > 0)
-res.BBUMcorr = BBUM_DEcorr(
-  deseq_results = res,
-  classCol = "FCup"
-  ) # function call
 
-# Some customized behavior
-res.BBUMcorr =  BBUM_DEcorr(
-  deseq_results = res,
-  classCol = "signal",
+# Call bbum function
+res.BBUMcorr = BBUM_DEcorr(
+  df.deseq = res,
+  classCol = "FCup"
+  )
+
+# Or with some customized behavior
+res.BBUMcorr = BBUM_DEcorr(
+  df.deseq = res,
+  classCol = "FCup",
   geneName = "miRNAs",
   pBBUM.alpha = 0.01,
   excluded = c("hsa-miR-124-5p", "hsa-miR-1-3p"),

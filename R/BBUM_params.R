@@ -9,14 +9,14 @@ BBUM_default_lim = function(rcap) {
     list(
       lambda = c( 0, 1   ),
       a      = c( 0, 1   ),
-      theta  = c( 0, 0.8 ),
+      theta  = c( 0, 1 ),
       r      = c( 0, 1  )
     )
   } else {
     list(
       lambda = c( 0, 1   ),
       a      = c( 0, 1   ),
-      theta  = c( 0, 0.8 ),
+      theta  = c( 0, 1 ),
       r      = c( 0, 10  )
     )
   }

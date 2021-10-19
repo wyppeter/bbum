@@ -42,5 +42,7 @@ logit = function(x, base = exp(1), left = 0, right = 1, suppress.nan = TRUE) {
 inv.logit = function(x, base = exp(1), left = 0, right = 1) {
   # Map (-Inf, Inf) to (left, right)
   if(right <= left) { stop("Incorrect bounds in inv.logit() call.") }
-  (exp(x)/(1+exp(x))) * (right-left) + left
+  e = exp(x)
+  r = ifelse(is.infinite(e), 1, (e/(1+e)))
+  r * (right-left) + left
 }

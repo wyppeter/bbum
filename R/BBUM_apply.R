@@ -57,21 +57,23 @@ BBUM_apply = function(
   }
 
   # Attach new cols with coefs ----
+  coefs = BBUM.output$estim
   df.out = df %>%
     dplyr::ungroup() %>%
     dplyr::mutate(outlier = (outlier | geneName %in% trimmed_genes)) %>%  # include new outliers
     dplyr::mutate(
-      BBUM.l  = BBUM.output$BBUM.l,
-      BBUM.a  = BBUM.output$BBUM.a,
-      BBUM.th = BBUM.output$BBUM.th,
-      BBUM.r  = BBUM.output$BBUM.r,
+      BBUM.l  = coefs$lambda,
+      BBUM.a  = coefs$a,
+      BBUM.th = coefs$theta,
+      BBUM.r  = coefs$r,            # put coefs into the data table
       pBBUM   = BBUM.output$pBBUMs  # BBUM correction with FDR correction
     )
 
   # Output ----
   list(data = df.out,
-       BBUM.l  = BBUM.output$BBUM.l,  BBUM.a = BBUM.output$BBUM.a,
-       BBUM.th = BBUM.output$BBUM.th, BBUM.r = BBUM.output$BBUM.r,
-       BBUM.fit = BBUM.output$fitdist_obj
+       BBUM.l  = coefs$lambda,
+       BBUM.a  = coefs$a,
+       BBUM.th = coefs$theta,
+       BBUM.r  = coefs$r
   )
 }

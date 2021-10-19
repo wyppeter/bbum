@@ -32,7 +32,7 @@
 #'   individual p values through the BBUM algorithm.
 #' * \code{symm}: Modified symmetry plot of \code{-log10(p)} values, excluding
 #'   hits, with \code{-log10(0)} as the mid-point instead of the median. Uses
-#'   subsampling to account for different number of points in the signal and
+#'   subsampling to account for the different number of points in the signal and
 #'   background sets.
 #' @details The most critical region of BBUM distribution for an appropriate
 #'   correction for secondary effects is the "left-tail" around 0, where both
@@ -45,16 +45,17 @@
 #'   secondary effects) distributions of p values. As excluding hits does not
 #'   exclude the false-negative region, there is still an expected discrepancy
 #'   at low p values. The implemented color gradient attempts to reflect
-#'   this expected up-deviation from the diagional line when the fraction of
+#'   this expected up-deviation from the diagonal line when the fraction of
 #'   remaining primary effects is large. Empirically, distributions that do not
-#'   deviate from the \code{+/- 1*log(10)} lines at low expected primary effects
-#'   fractions are symmetrical enough for accurate BBUM correction.
+#'   deviate from the \code{+/- log(10)} lines when the expected primary effects
+#'   fractions is low are symmetrical enough for accurate BBUM correction.
 #'
-#' @return \code{ggplot} plot object.
+#' @return \code{ggplot2} plot object.
 #'
 #' @examples
 #' \dontrun{
-#' BBUM_plot(option = "ecdf_log",
+#' BBUM_plot(df.bbum = res.BBUMcorr,
+#'           option = "ecdf_log",
 #'           expressionCol = "WTmean",
 #'           pBBUM.alpha = 0.01)
 #' }
@@ -80,7 +81,7 @@ BBUM_plot = function(
   plot.option = tolower(option[1])
   BBUM.th = df.bbum %>% dplyr::pull(BBUM.th) %>% unique()
   bum.model.graph = tibble::tibble(
-    p = sort(c(10^seq(-350,-3,0.05), seq(1E-3,1,1E-3)))
+    p = sort(c(10^seq(-300,-3,0.05), seq(1E-3,1,1E-3)))
     ) %>%
     tidyr::crossing(df.bbum %>%
                       dplyr::select(BBUM.l, BBUM.a, BBUM.th, BBUM.r) %>%
@@ -90,13 +91,15 @@ BBUM_plot = function(
                   dbbum.model = dbbum(p, BBUM.l, BBUM.a, BBUM.th, BBUM.r),
                   pbbum.model = pbbum(p, BBUM.l, BBUM.a, BBUM.th, BBUM.r)
     )
-  down_lim = 10^((df.bbum %>% dplyr::filter(!BBUM.class) %>%
-                    dplyr::pull(pvalue) %>%
-                    sort() %>% log10())[2] - 5)
 
-  down_lim.trans = 10^((df.bbum %>% dplyr::filter(!BBUM.class) %>%
-                          dplyr::pull(pBBUM) %>%
-                          sort() %>% log10())[2] - 2)
+  topp = df.bbum %>%
+    dplyr::filter(is.finite(pvalue)) %>%
+    dplyr::group_by(BBUM.class) %>%
+    dplyr::arrange(pvalue, .by_group = TRUE) %>%
+    dplyr::slice(1) %>%
+    dplyr::ungroup()
+  down_lim = 10^(topp %>% dplyr::pull(pvalue) %>% log10() %>% mean())
+  down_lim.trans = 10^(topp %>% dplyr::pull(pBBUM) %>% log10() %>% mean())
 
   # Plots ----
   if(plot.option == "ma"){
@@ -159,11 +162,11 @@ BBUM_plot = function(
       ggplot2::geom_line(data = bum.model.graph, inherit.aes = F,
                          ggplot2::aes(x = p, y = dbum.model*(1-BBUM.th)),
                          color = "goldenrod3",
-                         alpha = 0.75, size = 0.5) +
+                         alpha = 0.5, size = 0.5) +
       ggplot2::geom_line(data = bum.model.graph, inherit.aes = FALSE,
                          ggplot2::aes(x = p, y = dbbum.model),
                          color = "turquoise4",
-                         alpha = 0.75, size = 0.5) +
+                         alpha = 0.5, size = 0.5) +
       ggplot2::scale_color_manual(breaks = c(FALSE, TRUE),
                                   values = c("goldenrod3","turquoise4"),
                                   labels = c("Background", "Signal")
@@ -191,11 +194,11 @@ BBUM_plot = function(
       ggplot2::geom_line(data = bum.model.graph, inherit.aes = F,
                          ggplot2::aes(x = p, y = pbum.model),
                          color = "goldenrod3",
-                         alpha = 0.75, size = 0.7) +
+                         alpha = 0.5, size = 0.7) +
       ggplot2::geom_line(data = bum.model.graph, inherit.aes = FALSE,
                          ggplot2::aes(x = p, y = pbbum.model),
                          color = "turquoise4",
-                         alpha = 0.75, size = 0.7) +
+                         alpha = 0.5, size = 0.7) +
       ggplot2::scale_color_manual(breaks = c(FALSE, TRUE),
                                   values = c("goldenrod3","turquoise4"),
                                   labels = c("Background", "Signal")
@@ -214,7 +217,7 @@ BBUM_plot = function(
         color = factor(BBUM.class, levels = c(TRUE,FALSE)))) +
       ggplot2::geom_hline(yintercept = 0, color = "gray60",
                           alpha = 0.75, size = 0.5) +
-      ggplot2::geom_vline(xintercept = c(0,1), color = "gray60",
+      ggplot2::geom_vline(xintercept = c(1), color = "gray60",
                           alpha = 0.75, size = 0.5) +
       ggplot2::geom_line(data = tibble::tibble(
         pvalue     = 10^(seq(-10,0,0.01)),
@@ -225,11 +228,11 @@ BBUM_plot = function(
       ggplot2::geom_line(data = bum.model.graph, inherit.aes = F,
                          ggplot2::aes(x = p, y = pbum.model),
                          color = "goldenrod3",
-                         alpha = 0.75, size = 0.7) +
+                         alpha = 0.5, size = 0.7) +
       ggplot2::geom_line(data = bum.model.graph, inherit.aes = FALSE,
                          ggplot2::aes(x = p, y = pbbum.model),
                          color = "turquoise4",
-                         alpha = 0.75, size = 0.7) +
+                         alpha = 0.5, size = 0.7) +
       ggplot2::scale_color_manual(breaks = c(FALSE, TRUE),
                                   values = c("goldenrod3","turquoise4"),
                                   labels = c("Background", "Signal")
@@ -262,7 +265,7 @@ BBUM_plot = function(
                                   labels = c("Background", "Signal")
       ) +
       ggplot2::labs(x = "pBBUM value", y = "Cumulative frequency",
-                    title = "ECDF of p values", color = "Data set") +
+                    title = "ECDF of BBUM-FDR-adjusted p values", color = "Data set") +
       ggplot2::theme_classic(base_size = 12)
     )
 
@@ -275,7 +278,7 @@ BBUM_plot = function(
         color = factor(BBUM.class, levels = c(TRUE,FALSE)))) +
       ggplot2::geom_hline(yintercept = 0, color = "gray60",
                           alpha = 0.75, size = 0.5) +
-      ggplot2::geom_vline(xintercept = c(0,1), color = "gray60",
+      ggplot2::geom_vline(xintercept = c(1), color = "gray60",
                           alpha = 0.75, size = 0.5) +
       ggplot2::geom_vline(xintercept = pBBUM.alpha, color = "salmon4",
                           alpha = 0.75, size = 0.5, linetype = "dashed") +
@@ -287,7 +290,7 @@ BBUM_plot = function(
       ggplot2::scale_x_continuous(trans = "log10") +
       ggplot2::coord_cartesian(xlim = c(down_lim.trans,1)) +
       ggplot2::labs(x = "pBBUM value", y = "Cumulative frequency",
-                    title = "ECDF of p values, in log", color = "Data set") +
+                    title = "ECDF of BBUM-FDR-adjusted p values, in log", color = "Data set") +
       ggplot2::theme_classic(base_size = 12)
     )
 
@@ -330,9 +333,9 @@ BBUM_plot = function(
       ggplot2::scale_x_continuous(breaks = pdir.breaks,
                                   labels = 10^-abs(pdir.breaks)) +
       ggplot2::coord_cartesian(xlim = c(-pdir.lim, pdir.lim*2)) +
-      ggplot2::labs(x = "value", y = "statistic",
-                    title = "Distribution of different p values",
-                    color = "Data set") +
+      ggplot2::labs(x = "Value", y = "Statistic",
+                    title = "Correction of p values",
+                    color = "Gene category") +
       ggplot2::theme_classic(base_size = 12)
     )
 

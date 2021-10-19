@@ -44,12 +44,12 @@ trimmed as outliers.}
 \value{
 A named list with the following items:
 \itemize{
+\item \code{estim}: A named list of fitted parameter values.
 \item \code{LL}: Value of the maximized log-likelihood.
-\item \code{val.l}: Fitted \code{lambda} parameter.
-\item \code{val.a}: Fitted \code{a} parameter.
-\item \code{val.th}: Fitted \code{theta} parameter.
-\item \code{val.r}: Fitted \code{r} parameter.
-\item \code{fit.obj}: Fit output object of \code{optim}.
+\item \code{convergence}: Convergence code from \code{optim}.
+\item \code{outlier_trim}: The input value of the \code{outlier_trim} argument.
+\item \code{r.passed}: Boolean for whether the fitted \code{r} value was under
+the threshold for flagging outliers.
 }
 }
 \description{
@@ -76,22 +76,24 @@ begin with.
 }
 \examples{
 BBUM_fit(
-  dt_signal_set = c(0.031, 0.0014, 0.0003, 0.0001, 0.049,
-                    0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9),
-  dt_bg_set     = c(0.701, 0.503, 0.109, 0.0071, 0.019,
-                    0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9),
-  starts = list(c(lambda = 0.9, a = 0.1, theta = 0.1, r = 0.1))
+  dt_signal_set = c(0.000021, 0.00010, 0.03910, 0.031, 0.001,
+                    0.13, 0.21, 0.38, 0.42, 0.52, 0.60, 0.73, 0.81, 0.97),
+  dt_bg_set     = c(0.501, 0.203, 0.109, 0.071, 0.019,
+                    0.11, 0.27, 0.36, 0.43, 0.50, 0.61, 0.77, 0.87, 0.91),
+  starts = list(c(lambda = 0.9, a = 0.6, theta = 0.1, r = 0.1))
 )
 BBUM_fit(
-  dt_all        = c(0.701, 0.503, 0.109, 0.0071, 0.019, 0.031, 0.0014,
-                    0.0003, 0.0001, 0.049, 0.0001,
-                    0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9,
-                    0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9),
+  dt_all        = c(0.501, 0.203, 0.109, 0.071, 0.019, 0.031, 0.001,
+                    0.000021, 0.00010, 0.03910,
+                    0.0001,
+                    0.11, 0.27, 0.36, 0.43, 0.50, 0.61, 0.77, 0.87, 0.91,
+                    0.13, 0.21, 0.38, 0.42, 0.52, 0.60, 0.73, 0.81, 0.97),
   signal_set    = c(FALSE, FALSE, FALSE, FALSE, FALSE, TRUE, TRUE,
-                    TRUE, TRUE, TRUE, FALSE,
+                    TRUE,  TRUE,  TRUE,
+                    FALSE,
                     FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE,
-                    TRUE, TRUE, TRUE, TRUE, TRUE, TRUE, TRUE, TRUE, TRUE),
-  starts = list(c(lambda = 0.9, a = 0.1, theta = 0.1, r = 0.1)),
+                    TRUE,  TRUE,  TRUE,  TRUE,  TRUE,  TRUE,  TRUE,  TRUE,  TRUE),
+  starts = list(c(lambda = 0.9, a = 0.6, theta = 0.1, r = 0.1)),
   outlier_trim = 1
 )
 

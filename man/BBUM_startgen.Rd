@@ -12,5 +12,5 @@ not mentioned would be default values.}
 }
 \description{
 Generates properly rescaled start values for BBUM fitting, including 6 static
-configurations by default.
+configurations by default (\code{4*3/2}).
 }

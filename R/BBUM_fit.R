@@ -32,31 +32,33 @@
 #'   \code{r.pass} value.
 #'
 #' @return A named list with the following items:
+#' * \code{estim}: A named list of fitted parameter values.
 #' * \code{LL}: Value of the maximized log-likelihood.
-#' * \code{val.l}: Fitted \code{lambda} parameter.
-#' * \code{val.a}: Fitted \code{a} parameter.
-#' * \code{val.th}: Fitted \code{theta} parameter.
-#' * \code{val.r}: Fitted \code{r} parameter.
-#' * \code{fit.obj}: Fit output object of \code{optim}.
+#' * \code{convergence}: Convergence code from \code{optim}.
+#' * \code{outlier_trim}: The input value of the \code{outlier_trim} argument.
+#' * \code{r.passed}: Boolean for whether the fitted \code{r} value was under
+#'   the threshold for flagging outliers.
 #'
 #' @examples
 #' BBUM_fit(
-#'   dt_signal_set = c(0.031, 0.0014, 0.0003, 0.0001, 0.049,
-#'                     0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9),
-#'   dt_bg_set     = c(0.701, 0.503, 0.109, 0.0071, 0.019,
-#'                     0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9),
-#'   starts = list(c(lambda = 0.9, a = 0.1, theta = 0.1, r = 0.1))
+#'   dt_signal_set = c(0.000021, 0.00010, 0.03910, 0.031, 0.001,
+#'                     0.13, 0.21, 0.38, 0.42, 0.52, 0.60, 0.73, 0.81, 0.97),
+#'   dt_bg_set     = c(0.501, 0.203, 0.109, 0.071, 0.019,
+#'                     0.11, 0.27, 0.36, 0.43, 0.50, 0.61, 0.77, 0.87, 0.91),
+#'   starts = list(c(lambda = 0.9, a = 0.6, theta = 0.1, r = 0.1))
 #' )
 #' BBUM_fit(
-#'   dt_all        = c(0.701, 0.503, 0.109, 0.0071, 0.019, 0.031, 0.0014,
-#'                     0.0003, 0.0001, 0.049, 0.0001,
-#'                     0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9,
-#'                     0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9),
+#'   dt_all        = c(0.501, 0.203, 0.109, 0.071, 0.019, 0.031, 0.001,
+#'                     0.000021, 0.00010, 0.03910,
+#'                     0.0001,
+#'                     0.11, 0.27, 0.36, 0.43, 0.50, 0.61, 0.77, 0.87, 0.91,
+#'                     0.13, 0.21, 0.38, 0.42, 0.52, 0.60, 0.73, 0.81, 0.97),
 #'   signal_set    = c(FALSE, FALSE, FALSE, FALSE, FALSE, TRUE, TRUE,
-#'                     TRUE, TRUE, TRUE, FALSE,
+#'                     TRUE,  TRUE,  TRUE,
+#'                     FALSE,
 #'                     FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE,
-#'                     TRUE, TRUE, TRUE, TRUE, TRUE, TRUE, TRUE, TRUE, TRUE),
-#'   starts = list(c(lambda = 0.9, a = 0.1, theta = 0.1, r = 0.1)),
+#'                     TRUE,  TRUE,  TRUE,  TRUE,  TRUE,  TRUE,  TRUE,  TRUE,  TRUE),
+#'   starts = list(c(lambda = 0.9, a = 0.6, theta = 0.1, r = 0.1)),
 #'   outlier_trim = 1
 #' )
 #'
@@ -97,6 +99,8 @@ BBUM_fit = function(
   all.fit.tries = starts %>%
     lapply(., function(start.i) {
       tryCatch({
+
+        # Optimization
         BBUM_corr.i = stats::optim(
           par = start.i,
           fn = BBUM_loglik,
@@ -108,49 +112,74 @@ BBUM_fit = function(
           control = list(maxit = 500,
                          fnscale = -1)  # maximization
         )
-        LL.i = BBUM_corr.i$value
-        params.estim.i = BBUM_params_recoverLin(BBUM_corr.i$par, limits = limits, rcap = rcap)
-        val.l.i  = params.estim.i["lambda"]
-        val.a.i  = params.estim.i["a"]
-        val.th.i = params.estim.i["theta"]
-        val.r.i  = params.estim.i["r"]
-        list(LL  = LL.i,
-             val.l  = val.l.i,
-             val.a  = val.a.i,
-             val.th = val.th.i,
-             val.r  = val.r.i,
-             fit.obj = I(BBUM_corr.i))
+
+        # Extract values and calculate estimated confidence intervals
+        par.raw.i = BBUM_corr.i$par
+
+        params.estim.i = BBUM_params_recoverLin(
+          par.raw.i,
+          limits = limits, rcap = rcap)
+
+        list(LL     = BBUM_corr.i$value,
+             conv   = BBUM_corr.i$convergence,
+             val.l  = unname(params.estim.i["lambda"]),
+             val.a  = unname(params.estim.i["a"]),
+             val.th = unname(params.estim.i["theta"]),
+             val.r  = unname(params.estim.i["r"])
+             )
       },
       error = function(m){
         warning(m)
         list(LL  = -Inf,
+             conv = 999,
              val.l  = NA_real_,
              val.a  = NA_real_,
              val.th = NA_real_,
-             val.r  = NA_real_,
-             fit.obj = NA)
+             val.r  = NA_real_
+             )
       },
       warning = function(m){
         warning(m)
         list(LL  = -Inf,
+             conv = 999,
              val.l  = NA_real_,
              val.a  = NA_real_,
              val.th = NA_real_,
-             val.r  = NA_real_,
-             fit.obj = NA)
+             val.r  = NA_real_
+             )
       }
       )
     }) %>%
-    data.table::rbindlist(.)
+    data.table::rbindlist(.)  # arrange all results into a table
 
   # Select best fit ----
   # If more than one identical LL, take one randomly
-  best.fit = all.fit.tries %>%
-    dplyr::filter(LL == max(LL)) %>%
-    dplyr::sample_n(1)
+  succ.fits = all.fit.tries %>%
+    dplyr::filter(conv == 0)  # successful convergence
+  if(length(succ.fits) == 0){
 
-  # Load results and r check ----
-  best.fit %>%
-    dplyr::mutate(outlier_trim = outlier_trim,
-                  r.pass = val.r < rthres & val.l < lambda.thres)
+    # Nothing that worked
+    stop("All attempts to fit failed!")
+
+  } else {
+
+    # Load results and r check ----
+    best.fit = succ.fits %>%
+      dplyr::filter(LL == max(LL)) %>%
+      dplyr::sample_n(1) %>%
+      dplyr::mutate(outlier_trim = outlier_trim,
+                    r.pass = val.r < rthres &
+                      val.l < lambda.thres)
+
+    list(
+      estim = list( lambda = best.fit$val.l,
+                    a      = best.fit$val.a,
+                    theta  = best.fit$val.th,
+                    r      = best.fit$val.r    ),
+      LL = best.fit$LL,
+      convergence = best.fit$conv,
+      outlier_trim = outlier_trim,
+      r.pass = best.fit$r.pass
+    )
+  }
 }

@@ -25,7 +25,7 @@ axis of the MA graph. (Only for \code{option = "MA"}.)}
 \item{pBBUM.alpha}{Cutoff level of \code{pBBUM} for significance calling.}
 }
 \value{
-\code{ggplot} plot object.
+\code{ggplot2} plot object.
 }
 \description{
 Useful graphs for checking and viewing the results of BBUM correction and
@@ -55,7 +55,7 @@ values, by data set. This plot is helpful for evaluating the correction of
 individual p values through the BBUM algorithm.
 \item \code{symm}: Modified symmetry plot of \code{-log10(p)} values, excluding
 hits, with \code{-log10(0)} as the mid-point instead of the median. Uses
-subsampling to account for different number of points in the signal and
+subsampling to account for the different number of points in the signal and
 background sets.
 }
 
@@ -72,14 +72,15 @@ signal and background sets have roughly similar background (null and
 secondary effects) distributions of p values. As excluding hits does not
 exclude the false-negative region, there is still an expected discrepancy
 at low p values. The implemented color gradient attempts to reflect
-this expected up-deviation from the diagional line when the fraction of
+this expected up-deviation from the diagonal line when the fraction of
 remaining primary effects is large. Empirically, distributions that do not
-deviate from the \code{+/- 1*log(10)} lines at low expected primary effects
-fractions are symmetrical enough for accurate BBUM correction.
+deviate from the \code{+/- log(10)} lines when the expected primary effects
+fractions is low are symmetrical enough for accurate BBUM correction.
 }
 \examples{
 \dontrun{
-BBUM_plot(option = "ecdf_log",
+BBUM_plot(df.bbum = res.BBUMcorr,
+          option = "ecdf_log",
           expressionCol = "WTmean",
           pBBUM.alpha = 0.01)
 }

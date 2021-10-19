@@ -25,7 +25,7 @@ BBUM_limapply = function(props, limits = list()) {
 #' Generating guess values
 #'
 #' Generates properly rescaled start values for BBUM fitting, including 6 static
-#'   configurations by default.
+#'   configurations by default (\code{4*3/2}).
 #'
 #' @inheritParams BBUM_loglik
 #'
@@ -34,20 +34,24 @@ BBUM_startgen = function(limits = list()) {
     purrr::map(function(x) {  # combinations of relative magnitudes
       list(
         BBUM_limapply(limits = limits, props = c(
-          lambda = x,
-          a = x,
-          theta = (1-x),
-          r = 1-x)),
+          lambda = 1-x,
+          a      = 1-x,
+          theta  = x,
+          r      = x)
+        ),
         BBUM_limapply(limits = limits, props = c(
           lambda = 1-x,
-          a = x,
-          theta = x,
-          r = 1-x)),
+          a      = x,
+          theta  = 1-x,
+          r      = x)
+        ),
         BBUM_limapply(limits = limits, props = c(
           lambda = 1-x,
-          a = x,
-          theta = (1-x),
-          r = x))
+          a      = x,
+          theta  = x,
+          r      = 1-x)
+        )
+
       )
     }) %>%  # this gives a list of lists of combos
     unlist(recursive = F, use.names = F)  # flatten one level; a list of all combos
