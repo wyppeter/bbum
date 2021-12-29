@@ -11,6 +11,7 @@ BBUM_fit(
   signal_set = NULL,
   starts,
   limits = list(),
+  pBBUM.alpha = 0.05,
   rcap = TRUE,
   outlier_trim = 0,
   rthres = 1
@@ -25,21 +26,27 @@ background sets.}
 
 \item{signal_set}{A vector of booleans signifying which values among
 \code{dt_all} are signal set data points. Used only in conjunction with
-\code{dt_all}.}
+\code{dt_all}. Should be same length as \code{dt_all}.}
 
 \item{starts}{A list of named vectors of starts for the four BBUM parameters.}
 
 \item{limits}{Named list of custom limits for specific paramters. Parameters
 not mentioned would be default values.}
 
-\item{rcap}{Whether the parameter r should have a stringent upper bound in
-this instance.}
+\item{pBBUM.alpha}{Cutoff level of BBUM-FDR-adjusted p values for
+significance testing. Only used here to generate appropriate default
+limits.}
 
-\item{outlier_trim}{Number of strongest points among the background class to be
-trimmed as outliers.}
+\item{rcap}{Whether the parameter r should have a stringent upper bound in
+this instance (for smart toggling of outlier detection).}
+
+\item{outlier_trim}{Number of strongest points among the background class to
+be trimmed as outliers. For automatic trimming methods in other functions
+and not meant for use in isolation.}
 
 \item{rthres}{Threshold value of \code{r} parameter to trigger a failed
-\code{r.pass} value.}
+\code{r.pass} value. For automatic trimming methods in other functions
+and not meant for use in isolation.}
 }
 \value{
 A named list with the following items:
@@ -53,10 +60,10 @@ the threshold for flagging outliers.
 }
 }
 \description{
-Fitting the BBUM model on data containing a set with primary effects (signal
-set) and a set without (background set), using maximum likelihood estimation
-(MLE) with the Nelder-Mead algorithm. It chooses the best solution among
-all starts provided.
+Fitting the BBUM model on dataset containing a set with primary
+signal (signal set) and a set without (background set), using maximum
+likelihood estimation (MLE) with the BFGS algorithm (\code{optim}). It
+chooses the best solution among all starts provided.
 }
 \details{
 Either use \code{dt_signal_set} and \code{dt_bg_set} to input data
@@ -66,6 +73,8 @@ ignored.
 
 If more than one start achieved the identical maximum likelihood,
 A random start is chosen among them.
+
+Both sets should have at least 10 points each for modeling.
 
 \code{rcap} is used internally to decide on the default limits for
 \code{r}.

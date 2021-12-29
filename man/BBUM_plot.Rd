@@ -6,8 +6,8 @@
 \usage{
 BBUM_plot(
   df.bbum,
-  option = c("MA", "hist", "ecdf", "ecdf_log", "ecdf.corr", "ecdf_log.corr", "pcorr",
-    "symm"),
+  option = c("MA", "volcano", "hist", "ecdf", "ecdf_log", "ecdf.corr", "ecdf_log.corr",
+    "pp", "pcorr", "symm"),
   expressionCol = "baseMean",
   pBBUM.alpha = 0.05
 )
@@ -33,13 +33,15 @@ significance calling.
 }
 \details{
 The argument \code{expressionCol} allows plotting the MA graph
-against a specified column. For instance, some may prefer to plot the mean
-normalized expression among control experiments only, rather than the
-default \code{"baseMean"}.
+against a specified column as the x axis (expression level). For instance,
+some may prefer to plot the mean normalized expression in control
+experiments only, rather than the default \code{"baseMean"} of DESeq2.
 
 Graph \code{option}s are:
 \itemize{
 \item \code{MA}: MA plot (\code{log2FoldChange} against \code{expressionCol})
+\item \code{volcano}: Volcano plot (\code{-log10(pvalue)} against
+\code{log2FoldChange})
 \item \code{hist}: p value histogram separated into signal and background set
 points, with BBUM model overlaid. Background histogram is normalized by a
 factor of \code{1 - theta} to account for the lack of primary effects for
@@ -50,6 +52,7 @@ points, with BBUM model overlaid.
 on the left-tail.
 \item \code{ecdf.corr}, \code{ecdf_log.corr}: Plots the \code{pBBUM} values
 instead to evaluate the FDR-corrected p values.
+\item \code{pp}: P-P plot to evaluate the goodness of fit.
 \item \code{pcorr}: Plot of p values from raw values to BBUM-FDR_corrected
 values, by data set. This plot is helpful for evaluating the correction of
 individual p values through the BBUM algorithm.
@@ -65,7 +68,11 @@ primary and secondary beta components peak. An ECDF graph in log scale
 allows emphasis and better visualization of this region.
 
 ECDF graphs are overlaid on the \code{x = y} diagonal line, which
-represents the uniform-only i.e. no secondary effects case.
+represents the uniform/null-only i.e. no secondary effects case.
+
+Because the peak near \code{p = 0} is the most informative region
+for p values correction, a P-P plot is more appropriate to assess
+goodness-of-fit of BBUM models than a Q-Q plot.
 
 Plot \code{symm} is for the validation of the assumption that the
 signal and background sets have roughly similar background (null and
@@ -74,8 +81,9 @@ exclude the false-negative region, there is still an expected discrepancy
 at low p values. The implemented color gradient attempts to reflect
 this expected up-deviation from the diagonal line when the fraction of
 remaining primary effects is large. Empirically, distributions that do not
-deviate from the \code{+/- log(10)} lines when the expected primary effects
-fractions is low are symmetrical enough for accurate BBUM correction.
+deviate from the \code{+/- log(10)} dashed lines when the expected primary
+effects fractions is low are symmetrical enough for accurate BBUM
+correction.
 }
 \examples{
 \dontrun{

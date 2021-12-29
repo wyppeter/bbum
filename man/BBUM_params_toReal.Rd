@@ -4,7 +4,7 @@
 \alias{BBUM_params_toReal}
 \title{Transform actual values to fitting values}
 \usage{
-BBUM_params_toReal(params, limits = list(), rcap)
+BBUM_params_toReal(params, limits = list(), rcap, pBBUM.alpha)
 }
 \arguments{
 \item{params}{Named vector of BBUM parameters.}
@@ -13,7 +13,11 @@ BBUM_params_toReal(params, limits = list(), rcap)
 not mentioned would be default values.}
 
 \item{rcap}{Whether the parameter r should have a stringent upper bound in
-this instance.}
+this instance (for smart toggling of outlier detection).}
+
+\item{pBBUM.alpha}{Cutoff level of BBUM-FDR-adjusted p values for
+significance testing. Only used here to generate appropriate default
+limits.}
 }
 \description{
 For internal use of the package.

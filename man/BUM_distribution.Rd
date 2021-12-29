@@ -13,12 +13,12 @@ pbum(q, lambda, a)
 \arguments{
 \item{x, q}{Vector of quantiles.}
 
-\item{lambda}{Vector of BUM parameter \code{lambda}. lambda is the fraction
-of null (uniform distribution density) over all density.}
+\item{lambda}{Vector of BUM parameter \code{lambda}. \emph{lambda} is the
+fraction of null (uniform distribution density) over all density.}
 
-\item{a}{Vector of BUM parameter \code{a}, which corresponds to the a
-parameter of the beta distribution component. It describes the steepness of
-the beta distribution.}
+\item{a}{Vector of BUM parameter \code{a}, which corresponds to the \emph{a}
+shape parameter of the beta distribution component. It describes the
+steepness of the beta distribution.}
 }
 \value{
 \code{dbum} gives the density (PDF), and \code{pbum} gives the
@@ -31,8 +31,8 @@ not available.
 }
 \details{
 The \code{b} parameter of the typical beta distribution function is
-constrained to be 1 here to limit it to a one-sided, monotonic case,
-peaking at 0, when 0 < \code{a} < 1.
+constrained to be \code{1} here to limit it to a one-sided, monotonic case,
+peaking at 0, when \code{0 < a < 1}.
 }
 \examples{
 dbum(x = 0.096, lambda = 0.65, a = 0.1)

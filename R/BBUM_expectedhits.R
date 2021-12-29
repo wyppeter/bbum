@@ -12,7 +12,7 @@
 #' @details \code{params} should be named as \code{BBUM.l}, \code{BBUM.a},
 #'   \code{BBUM.th}, \code{BBUM.a}.
 #'
-#' @return The numeric value of the expected hits count, as a float.
+#' @return The numeric value of the expected hits count, as a decimal numeric.
 #'
 #' @examples
 #' BBUM_expectedhits(

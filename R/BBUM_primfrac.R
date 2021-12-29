@@ -17,5 +17,5 @@
 BBUM_primfrac = function(x, lambda, a, theta, r) {
   AUC = dbbum(x, lambda, a, theta, r)
   prim = theta * (a*r) * x^((a*r)-1)
-  return(prim/AUC)
+  prim/AUC
 }

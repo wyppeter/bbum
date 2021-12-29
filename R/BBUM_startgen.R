@@ -9,9 +9,9 @@
 #'   \code{[0, 1]}.
 #' @inheritParams BBUM_loglik
 #'
-BBUM_limapply = function(props, limits = list()) {
+BBUM_limapply = function(props, limits = list(), pBBUM.alpha) {
   # Retrieve custom lims
-  parlims = utils::modifyList(BBUM_default_lim(rcap = FALSE), limits)
+  parlims = utils::modifyList(BBUM_default_lim(rcap = FALSE, pBBUM.alpha = pBBUM.alpha), limits)
   # Rescale
   # If right > 1, limit to 1
   c(
@@ -29,23 +29,23 @@ BBUM_limapply = function(props, limits = list()) {
 #'
 #' @inheritParams BBUM_loglik
 #'
-BBUM_startgen = function(limits = list()) {
+BBUM_startgen = function(limits = list(), pBBUM.alpha) {
   c(0.1, 0.9) %>%  # fixed start proportions
     purrr::map(function(x) {  # combinations of relative magnitudes
       list(
-        BBUM_limapply(limits = limits, props = c(
+        BBUM_limapply(limits = limits, pBBUM.alpha = pBBUM.alpha, props = c(
           lambda = 1-x,
           a      = 1-x,
           theta  = x,
           r      = x)
         ),
-        BBUM_limapply(limits = limits, props = c(
+        BBUM_limapply(limits = limits, pBBUM.alpha = pBBUM.alpha, props = c(
           lambda = 1-x,
           a      = x,
           theta  = 1-x,
           r      = x)
         ),
-        BBUM_limapply(limits = limits, props = c(
+        BBUM_limapply(limits = limits, pBBUM.alpha = pBBUM.alpha, props = c(
           lambda = 1-x,
           a      = x,
           theta  = x,

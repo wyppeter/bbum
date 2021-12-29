@@ -15,7 +15,7 @@ BBUM_expectedhits(params, alpha, n)
 signal set.}
 }
 \value{
-The numeric value of the expected hits count, as a float.
+The numeric value of the expected hits count, as a decimal numeric.
 }
 \description{
 \code{BBUM_expectedhits} computes the expected number of true hits, according

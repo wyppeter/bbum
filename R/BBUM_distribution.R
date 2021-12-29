@@ -9,18 +9,18 @@
 #'
 #' @param x,q Vector of quantiles.
 #' @param n Number of observations.
-#' @param lambda Vector of BBUM parameter \code{lambda}. lambda is the fraction
-#'   of null (uniform distribution density) over all density except the primary
-#'   beta distribution.
-#' @param a Vector of BBUM parameter \code{a}, which corresponds to the a
-#'   parameter of the secondary beta distribution component. It describes the
-#'   steepness of the second beta distribution.
-#' @param theta Vector of BBUM parameter \code{theta}. theta is the fraction of
-#'   primary beta distribution density over all density.
-#' @param r Vector of BBUM parameter \code{r}, which is the ratio of the a
-#'   parameter of the primary beta distribution over that of the secondary beta
-#'   distribution. In other words, \code{a*r} is the a parameter for the primary
-#'   beta distribution component.
+#' @param lambda Vector of BBUM parameter \code{lambda}. *lambda* is the
+#'   fraction of null (uniform distribution density) over all density except the
+#'   primary beta distribution, i.e. null plus secondary beta.
+#' @param a Vector of BBUM parameter \code{a}, which corresponds to the *a*
+#'   shape parameter of the secondary beta distribution component. It describes
+#'   the steepness of the second beta distribution.
+#' @param theta Vector of BBUM parameter \code{theta}. *theta* is the fraction
+#'   of primary beta distribution density over all density.
+#' @param r Vector of BBUM parameter \code{r}, which is the ratio of the *a*
+#'   shape parameter of the primary beta distribution over that of the secondary
+#'   beta distribution. In other words, \code{a*r} is the shape parameter
+#'   for the primary beta distribution component.
 #'
 #' @return \code{dbbum} gives the density (PDF), and \code{pbbum} gives the
 #'   distribution function (CDF). \code{rbbum} generates random values from the
@@ -31,8 +31,8 @@
 #'   for secondary beta.
 #'
 #' @details The \code{b} parameter of the typical beta distribution function is
-#'   constrained to be 1 here to limit it to a one-sided, monotonic case,
-#'   peaking at 0, when 0 < \code{a} < 1.
+#'   constrained to be \code{1} here to limit it to a one-sided, monotonic case,
+#'   peaking at 0, when \code{0 < a < 1}.
 #'
 #' @examples
 #' dbbum(x = 0.096, lambda = 0.65, a = 0.1, theta = 0.02, r = 0.07)
@@ -89,7 +89,7 @@ rbbum.ID = function(n, lambda, a, theta, r) {
   pts_prim = qbeta_a(stats::runif(n_prim, min = 0, max = 1), a*r)
 
   ordered.p = data.frame(
-    pvalue = c(pts_null,     pts_seco,     pts_prim),
+    pvalue = c(    pts_null,     pts_seco,     pts_prim),
     cate   = c(rep(0,n_null),rep(2,n_seco),rep(1,n_prim))
   )
 

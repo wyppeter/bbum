@@ -9,21 +9,21 @@ BBUM_FDR(q, lambda, a, theta, r)
 \arguments{
 \item{q}{Vector of quantiles.}
 
-\item{lambda}{Vector of BBUM parameter \code{lambda}. lambda is the fraction
-of null (uniform distribution density) over all density except the primary
-beta distribution.}
+\item{lambda}{Vector of BBUM parameter \code{lambda}. \emph{lambda} is the
+fraction of null (uniform distribution density) over all density except the
+primary beta distribution, i.e. null plus secondary beta.}
 
-\item{a}{Vector of BBUM parameter \code{a}, which corresponds to the a
-parameter of the secondary beta distribution component. It describes the
-steepness of the second beta distribution.}
+\item{a}{Vector of BBUM parameter \code{a}, which corresponds to the \emph{a}
+shape parameter of the secondary beta distribution component. It describes
+the steepness of the second beta distribution.}
 
-\item{theta}{Vector of BBUM parameter \code{theta}. theta is the fraction of
-primary beta distribution density over all density.}
+\item{theta}{Vector of BBUM parameter \code{theta}. \emph{theta} is the fraction
+of primary beta distribution density over all density.}
 
-\item{r}{Vector of BBUM parameter \code{r}, which is the ratio of the a
-parameter of the primary beta distribution over that of the secondary beta
-distribution. In other words, \code{a*r} is the a parameter for the primary
-beta distribution component.}
+\item{r}{Vector of BBUM parameter \code{r}, which is the ratio of the \emph{a}
+shape parameter of the primary beta distribution over that of the secondary
+beta distribution. In other words, \code{a*r} is the shape parameter
+for the primary beta distribution component.}
 }
 \value{
 A vector of FDR values at each value of \code{q}.
@@ -31,6 +31,10 @@ A vector of FDR values at each value of \code{q}.
 \description{
 \code{BBUM_FDR} computes the false discovery rate (FDR) value at quantiles
 \code{q} according to the given parameters of the BBUM distribution.
+}
+\details{
+This modifed FDR is defined to include primary signal and exclude
+both secondary signal and null.
 }
 \examples{
 BBUM_FDR(q = c(0.001, 0.007, 0.19, 0.5, 0.99),

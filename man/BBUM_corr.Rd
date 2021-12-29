@@ -10,6 +10,7 @@ BBUM_corr(
   add_starts = list(),
   only_start = FALSE,
   limits = list(),
+  pBBUM.alpha = 0.05,
   auto_outliers = TRUE,
   rthres = 1,
   rtrimmax = 0.05,
@@ -23,20 +24,26 @@ background sets.}
 
 \item{signal_set}{A vector of booleans signifying which values among
 \code{dt_all} are signal set data points. Used only in conjunction with
-\code{dt_all}.}
+\code{dt_all}. Should be same length as \code{dt_all}.}
 
 \item{add_starts}{List of named vectors for additional starts of fitting
-algorithm.}
+algorithm beyond the default set.}
 
-\item{only_start}{Whether the algorithm should only use the given starts to fit.}
+\item{only_start}{Whether the algorithm should only use the given starts
+(\code{add_starts}) to fit.}
 
 \item{limits}{Named list of custom limits for specific paramters. Parameters
 not mentioned would be default values.}
 
+\item{pBBUM.alpha}{Cutoff level of BBUM-FDR-adjusted p values for
+significance testing. Only used here to generate appropriate default
+limits.}
+
 \item{auto_outliers}{Toggle automatic outlier trimming.}
 
 \item{rthres}{Threshold value of \code{r} parameter to trigger a failed
-\code{r.pass} value.}
+\code{r.pass} value. For automatic trimming methods in other functions
+and not meant for use in isolation.}
 
 \item{rtrimmax}{Maximum fraction of data points allowed to be outliers in the
 background set of data (to be trimmed).}
@@ -60,8 +67,8 @@ the threshold for flagging outliers.
 }
 }
 \description{
-Fits the BBUM model on the data, and transforms raw p values into values
-corrected for false discovery rate (FDR) of null \strong{and} secondary effects
+Fits the BBUM model on the dataset, and transforms raw p values into values
+corrected for false discovery rate (FDR) of null \strong{and} secondary signal
 according to the BBUM model, as multiple testing correction. Optionally, it
 automatically detects extreme value outliers among the background set, and
 resolves correction issues by trimming the outliers.
@@ -71,16 +78,31 @@ resolves correction issues by trimming the outliers.
 were set at that particular p value. This is similar to the interpretation
 of p values corrected through the typical \code{p.adjust(method = "fdr")}.
 
+\code{pBBUM} values are designed for the signal set p values only,
+Values for the background set are given but not valid as significance
+testing adjustment, and so should \strong{not} be used to call any hits. They
+are provided primarily to compare the equivalent transformation against the
+signal set to assess the adjustment strategy. The background set should
+\strong{not} be considered for hits.
+
+\code{BBUM_corr} functions best with p values filtered for poor
+quality data points in prior. Such points tend to have high p values and
+may disrupt the uniform null distribution.
+
 Default starts for BBUM fitting are implemented. If additional
 starts should included, or only custom starts should be considered, make
 use of \code{add_starts} and/or \code{only_start} arguments.
 
-If more than one start achieved the identical maximum likelihood,
-A random start is chosen among them.
+If more than one start achieved the identical likelihood, a random
+start is chosen among them.
 
 Automatic outlier detection relies on the model fitting a value of
-\code{r > 1}. For benchmarking of the trimming strategy, see
-Wang & Bartel, 2021.
+\code{r > 1}. Such a result suggests that a stronger signal (presumably
+outliers) exists in the background set than in the signal set, which
+violates the assumptions of the model. This is a \emph{conservative} strategy.
+The ideal way to deal with outliers is to identify and handle them before
+any statistical analyses. For benchmarking of the trimming strategy, see
+Wang & Bartel, 2022.
 
 Adding too many starts or allowing too much outlier trimming can
 increase computation time.

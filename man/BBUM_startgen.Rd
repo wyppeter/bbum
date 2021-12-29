@@ -4,11 +4,15 @@
 \alias{BBUM_startgen}
 \title{Generating guess values}
 \usage{
-BBUM_startgen(limits = list())
+BBUM_startgen(limits = list(), pBBUM.alpha)
 }
 \arguments{
 \item{limits}{Named list of custom limits for specific paramters. Parameters
 not mentioned would be default values.}
+
+\item{pBBUM.alpha}{Cutoff level of BBUM-FDR-adjusted p values for
+significance testing. Only used here to generate appropriate default
+limits.}
 }
 \description{
 Generates properly rescaled start values for BBUM fitting, including 6 static

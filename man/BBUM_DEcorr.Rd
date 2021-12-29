@@ -2,7 +2,7 @@
 % Please edit documentation in R/BBUM_DEcorr.R
 \name{BBUM_DEcorr}
 \alias{BBUM_DEcorr}
-\title{FDR correction of secondary effects and significance calling after DESeq2}
+\title{FDR correction of secondary effects and significance calling on DE data frames}
 \usage{
 BBUM_DEcorr(
   df.deseq,
@@ -22,33 +22,37 @@ BBUM_DEcorr(
 )
 }
 \arguments{
-\item{df.deseq}{The output DESeqResults object from DESeq2, after running
-results(). This object should normally be of \code{data.frame} subclass.
-The \code{data.frame} could also have been further processed before calling
-\code{BBUM_DEcorr}, as long as the \code{pvalue} column is unchanged.}
+\item{df.deseq}{A DE results \code{data.frame} (or subclass). Typically the
+output  \code{DESeqResults} object from DESeq2, after running
+\code{results()}. The \code{data.frame} could also have been further
+processed before calling \code{BBUM_DEcorr}, as long as the appropriate
+columns are unchanged. See details.}
 
-\item{classCol}{A \code{str} of the name of the column that indicates whether
-a data point belongs in the signal set or the background set.}
+\item{classCol}{A \code{character} string of the name of the column that
+indicates whether a data point row belongs in the signal set or the
+background set.}
 
-\item{geneName}{A \code{str} of the name of the column that contains the
-names of genes, e.g. \code{"FeatureID"}. Leave as default (\code{NULL}) if
-the column has not been changed (as row names, or \code{"row"} if
-\code{tidy=T} in \code{results()}).}
+\item{geneName}{A \code{character} string of the name of the column that
+contains the names of genes, e.g. \code{"FeatureID"}. Leave as default
+(\code{NULL}) if the column has not been changed (i.e. as row names, or
+\code{"row"} if \code{tidy=T} in \code{results()} of DESeq2).}
 
 \item{pBBUM.alpha}{Cutoff level of \code{pBBUM} for significance calling.}
 
-\item{excluded}{A \code{str} vector of all gene names that did \strong{not} meet
-some user-determined prior filtering criteria (e.g. read cutoff). If
+\item{excluded}{A \code{character} vector of all gene names that did \strong{not}
+meet some user-determined prior filtering criteria (e.g. read cutoff). If
 \code{excluded} is not supplied, all genes with valid p values will be used
 for analysis.}
 
-\item{outliers}{A \code{str} vector of all (additional) genes names that
-should be regarded as outliers among the background set.}
+\item{outliers}{A \code{character} vector of all genes names that should be
+regarded as outliers among the background set (on top of automatically
+identified outliers, if applicable).}
 
 \item{add_starts}{List of named vectors for additional starts of fitting
-algorithm.}
+algorithm beyond the default set.}
 
-\item{only_start}{Whether the algorithm should only use the given starts to fit.}
+\item{only_start}{Whether the algorithm should only use the given starts
+(\code{add_starts}) to fit.}
 
 \item{limits}{Named list of custom limits for specific paramters. Parameters
 not mentioned would be default values.}
@@ -56,7 +60,8 @@ not mentioned would be default values.}
 \item{auto_outliers}{Toggle automatic outlier trimming.}
 
 \item{rthres}{Threshold value of \code{r} parameter to trigger a failed
-\code{r.pass} value.}
+\code{r.pass} value. For automatic trimming methods in other functions
+and not meant for use in isolation.}
 
 \item{rtrimmax}{Maximum fraction of data points allowed to be outliers in the
 background set of data (to be trimmed).}
@@ -67,52 +72,66 @@ in the background set of data (to be trimmed).}
 \item{quiet}{Suppress printed messages and warnings.}
 }
 \value{
-A \code{data.frame} based on the input results table, with added
+A \code{tibble} based on the input results table, with added
 columns from BBUM correction and significance calling:
 \itemize{
-\item \code{geneName}: Copy of extracted gene names (\code{str})
+\item \code{geneName}: Copy of extracted gene names (\code{character})
 \item \code{excluded}: Whether the point is considered failing the cutoff and
-excluded in \code{excluded} (\code{bool})
-\item \code{outlier}: Whether the point is considered an outlier (\code{bool})
-\item \code{BBUM.class}: Whether the data point is considered in the singal set
-instead of the background set (\code{bool})
+excluded in \code{excluded} (\code{logical})
+\item \code{outlier}: Whether the point is considered an outlier (\code{logical})
+\item \code{BBUM.class}: Whether the data point is considered in the signal set
+instead of the background set (\code{logical})
 \item \code{BBUM.l}, \code{BBUM.a}, \code{BBUM.th}, \code{BBUM.r}: Coefficients
-from BBUM model fit (\code{float})
-\item \code{pBBUM}: BBUM-transformed, FDR-adusted p value (\code{float})
-\item \code{BBUM.hit}: Whether a gene is a hit after signficance calling
-(\code{bool})
+from BBUM model fit (\code{numeric})
+\item \code{pBBUM}: BBUM-transformed, FDR-adusted p value (\code{numeric})
+\item \code{BBUM.hit}: Whether a gene is a significant hit (\code{logical})
 \item \code{BBUM.fct}: Factor summarizing status as hits, non-hits, or outliers
 (\code{factor})
 }
 }
 \description{
-Process DESeq2 data tables. Out of two subsets of data rows, one with
-primary effects and one without, \code{BBUM_DEcorr} models the p values to
+Process DE results data tables. Designed for DESeq2 output but any similar
+tables with all appropriate columns are applicable. Out of two subsets of
+data rows, one set ("signal/sample set") with primary effects and one
+("background set") without, \code{BBUM_DEcorr} models the p values to
 distinguish secondary effects signal from primary effects signal using the
 BBUM model. It then calls significant genes within the signal set after
 correcting for FDR of \strong{both} null \strong{and} secondary effects in multiple
 testing.
 }
 \details{
+\code{BBUM_DEcorr} can also be used on arbitrary data frames other
+those generated by \code{DESeq2} (e.g. by \code{EdgeR}), as long as three
+necessary columns are present: data points names (\code{geneName}), p
+values (\code{pvalue}), and data set identifier (\code{classCol}).
+
 The output \code{data.frame} preserves all original rows in order,
 all original columns in order, and row names if present.
 
 \code{classCol}: For example, in the case where positive log fold
 changes represent the signal class, and negative log fold changes represent
-the background class, all positive fold change points have
-\code{classCol == T}, and all negative fold change points have
+the background class, all rows of positive fold change points have
+\code{classCol == T}, and all rows of negative fold change points have
 \code{classCol == F}.
 
 \code{pBBUM} represents the expected overall FDR level if the cutoff
 were set at that particular p value. This is similar to the interpretation
 of p values corrected through the typical \code{p.adjust(method = "fdr")}.
 
+\code{pBBUM} values are designed for the signal set p values only,
+Values for the background set are given but not valid as significance
+testing adjustment, and so should \strong{not} be used to call any hits. They
+are provided primarily to compare the equivalent transformation against the
+signal set to assess the adjustment strategy. The background set should
+\strong{not} be considered for hits.
+
 \code{BBUM_DEcorr} functions properly only with p values filtered
 for poor quality data points, e.g. low read counts. Filtering has either
 been done manually in prior, through DESeq2's \code{independentFiltering}
 in \code{results()}, or through the \code{excluded} argument. Excluding a
 point via \code{excluded} is equivalent to filtering it out of the
-data.frame to begin with.
+data.frame to begin with. Such points tend to have high p values and
+may disrupt the uniform null distribution.
 
 Outliers (\code{outliers}) are included in the graphs from
 \code{BBUM_plot()} and have p values associated. Excluded points
@@ -122,12 +141,16 @@ Default starts for BBUM fitting are implemented. If additional
 starts should included, or only custom starts should be considered, make
 use of \code{add_starts} and/or \code{only_start} arguments.
 
-If more than one start achieved the identical maximum likelihood,
+If more than one start achieved the identical likelihood value,
 A random start is chosen among them.
 
 Automatic outlier detection relies on the model fitting a value of
-\code{r > 1}. For benchmarking of the trimming strategy, see
-Wang & Bartel, 2021.
+\code{r > 1}. Such a result suggests that a stronger signal (presumably
+outliers) exists in the background set than in the signal set, which
+violates the assumptions of the model. This is a \emph{conservative} strategy.
+The ideal way to deal with outliers is to identify and handle them before
+any statistical analyses. For benchmarking of the trimming strategy, see
+Wang & Bartel, 2022.
 
 Adding too many starts or allowing too much outlier trimming can
 increase computation time.

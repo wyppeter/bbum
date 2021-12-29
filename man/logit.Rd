@@ -17,9 +17,10 @@ inv.logit(x, base = exp(1), left = 0, right = 1)
 \item{left, right}{The lower and upper domain boundaries of the corresponding
 logit function. Defaults are 0 and 1.}
 
-\item{suppress.nan}{Whether to output NaN or -Inf/Inf when x is out of
-bounds. If TRUE, an out-of-bounds warning is issued while suppressing the
-NaN into either Inf (x > right) or -Inf (x < left).}
+\item{suppress.nan}{Whether to output \code{NaN} or \code{-Inf}/\code{Inf}
+when \code{x} is out of bounds. If \code{TRUE}, an out-of-bounds warning is
+issued while suppressing the \code{NaN} into either \code{Inf}
+(\code{x > right}) or \code{-Inf} (\code{x < left}).}
 }
 \value{
 A vector with the same length as \code{x}.
@@ -28,7 +29,7 @@ A vector with the same length as \code{x}.
 \code{logit} computes values transformed by the logit or log-odds function.
 \code{inv.logit} is the inverse of \code{logit}. The logarithm base used
 can be defined (default is natural logarithm). The left and right bounds
-of the logit function can also be defined, with default domain being
+of the logit function can also be defined, with the default domain being
 \code{(0, 1)}.
 }
 \examples{

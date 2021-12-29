@@ -1,9 +1,9 @@
 #' BBUM statistical modeling
 #'
-#' Fitting the BBUM model on data containing a set with primary effects (signal
-#'   set) and a set without (background set), using maximum likelihood estimation
-#'   (MLE) with the Nelder-Mead algorithm. It chooses the best solution among
-#'   all starts provided.
+#' Fitting the BBUM model on dataset containing a set with primary
+#'   signal (signal set) and a set without (background set), using maximum
+#'   likelihood estimation (MLE) with the BFGS algorithm (\code{optim}). It
+#'   chooses the best solution among all starts provided.
 #'
 #' @details Either use \code{dt_signal_set} and \code{dt_bg_set} to input data
 #'   separately, or use \code{dt_all} and \code{signal_set} to input data.
@@ -11,6 +11,7 @@
 #'   ignored.
 #' @details If more than one start achieved the identical maximum likelihood,
 #'   A random start is chosen among them.
+#' @details Both sets should have at least 10 points each for modeling.
 #' @details \code{rcap} is used internally to decide on the default limits for
 #'   \code{r}.
 #' @details A failed \code{r.pass} code is not
@@ -23,13 +24,15 @@
 #'   background sets.
 #' @param signal_set A vector of booleans signifying which values among
 #'   \code{dt_all} are signal set data points. Used only in conjunction with
-#'   \code{dt_all}.
+#'   \code{dt_all}. Should be same length as \code{dt_all}.
 #' @param starts A list of named vectors of starts for the four BBUM parameters.
 #' @inheritParams BBUM_loglik
-#' @param outlier_trim Number of strongest points among the background class to be
-#'   trimmed as outliers.
+#' @param outlier_trim Number of strongest points among the background class to
+#'   be trimmed as outliers. For automatic trimming methods in other functions
+#'   and not meant for use in isolation.
 #' @param rthres Threshold value of \code{r} parameter to trigger a failed
-#'   \code{r.pass} value.
+#'   \code{r.pass} value. For automatic trimming methods in other functions
+#'   and not meant for use in isolation.
 #'
 #' @return A named list with the following items:
 #' * \code{estim}: A named list of fitted parameter values.
@@ -70,6 +73,7 @@ BBUM_fit = function(
   signal_set    = NULL,
   starts,
   limits = list(),
+  pBBUM.alpha = 0.05,
   rcap = TRUE,
   outlier_trim = 0,
   rthres = 1
@@ -88,11 +92,12 @@ BBUM_fit = function(
   }
   # Check input
   if(length(dt_bg_set) < 10 || length(dt_signal_set) < 10){
-    stop("Too few data points for reliable model fitting!")
+    warning("Too few data points for reliable model fitting!")
   }
 
-  # If lambda is too big, r may be unreliable (as a is unreliable)
-  # In this case, no need to check for r being over 1.
+  # If lambda is too big, r may be unreliable (as a is unreliable; too little
+  #   information for the secondary beta density)
+  # In this case, no need to check for r being over 1 for outlier detection.
   lambda.thres = 1 - 0.1/(length(dt_signal_set)+length(dt_bg_set))
 
   # For every start, conduct fitting ----
@@ -101,27 +106,28 @@ BBUM_fit = function(
       tryCatch({
 
         # Optimization
-        BBUM_corr.i = stats::optim(
+        BBUM.optim.res = stats::optim(
           par = start.i,
           fn = BBUM_loglik,
           posSet = dt_signal_set,
           negSet = dt_bg_set[(outlier_trim+1):length(dt_bg_set)],  # trim any outliers
           limits = limits,
           rcap = rcap,
-          method = "Nelder-Mead",
-          control = list(maxit = 500,
+          pBBUM.alpha = pBBUM.alpha,
+          method = "BFGS",
+          control = list(maxit = 200,
                          fnscale = -1)  # maximization
         )
 
-        # Extract values and calculate estimated confidence intervals
-        par.raw.i = BBUM_corr.i$par
+        # Extract values
+        par.raw.i = BBUM.optim.res$par
 
         params.estim.i = BBUM_params_recoverLin(
           par.raw.i,
-          limits = limits, rcap = rcap)
+          limits = limits, rcap = rcap, pBBUM.alpha = pBBUM.alpha)
 
-        list(LL     = BBUM_corr.i$value,
-             conv   = BBUM_corr.i$convergence,
+        list(LL     = BBUM.optim.res$value,
+             conv   = BBUM.optim.res$convergence,
              val.l  = unname(params.estim.i["lambda"]),
              val.a  = unname(params.estim.i["a"]),
              val.th = unname(params.estim.i["theta"]),
@@ -156,7 +162,7 @@ BBUM_fit = function(
   # If more than one identical LL, take one randomly
   succ.fits = all.fit.tries %>%
     dplyr::filter(conv == 0)  # successful convergence
-  if(length(succ.fits) == 0){
+  if(nrow(succ.fits) == 0){
 
     # Nothing that worked
     stop("All attempts to fit failed!")
@@ -167,15 +173,16 @@ BBUM_fit = function(
     best.fit = succ.fits %>%
       dplyr::filter(LL == max(LL)) %>%
       dplyr::sample_n(1) %>%
-      dplyr::mutate(outlier_trim = outlier_trim,
-                    r.pass = val.r < rthres &
-                      val.l < lambda.thres)
+      dplyr::mutate(r.pass = !(val.r > rthres &
+                      val.l < lambda.thres))
+
+    coefs = list( lambda = best.fit$val.l,
+                  a      = best.fit$val.a,
+                  theta  = best.fit$val.th,
+                  r      = best.fit$val.r)
 
     list(
-      estim = list( lambda = best.fit$val.l,
-                    a      = best.fit$val.a,
-                    theta  = best.fit$val.th,
-                    r      = best.fit$val.r    ),
+      estim = coefs,
       LL = best.fit$LL,
       convergence = best.fit$conv,
       outlier_trim = outlier_trim,

@@ -9,6 +9,7 @@ BBUM_apply(
   add_starts,
   only_start,
   limits,
+  pBBUM.alpha,
   auto_outliers,
   rthres,
   rtrimmax,
@@ -20,17 +21,23 @@ BBUM_apply(
 \item{df}{\code{data.frame} input}
 
 \item{add_starts}{List of named vectors for additional starts of fitting
-algorithm.}
+algorithm beyond the default set.}
 
-\item{only_start}{Whether the algorithm should only use the given starts to fit.}
+\item{only_start}{Whether the algorithm should only use the given starts
+(\code{add_starts}) to fit.}
 
 \item{limits}{Named list of custom limits for specific paramters. Parameters
 not mentioned would be default values.}
 
+\item{pBBUM.alpha}{Cutoff level of BBUM-FDR-adjusted p values for
+significance testing. Only used here to generate appropriate default
+limits.}
+
 \item{auto_outliers}{Toggle automatic outlier trimming.}
 
 \item{rthres}{Threshold value of \code{r} parameter to trigger a failed
-\code{r.pass} value.}
+\code{r.pass} value. For automatic trimming methods in other functions
+and not meant for use in isolation.}
 
 \item{rtrimmax}{Maximum fraction of data points allowed to be outliers in the
 background set of data (to be trimmed).}

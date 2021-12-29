@@ -3,6 +3,9 @@
 #' \code{BBUM_FDR} computes the false discovery rate (FDR) value at quantiles
 #'   \code{q} according to the given parameters of the BBUM distribution.
 #'
+#' @details This modifed FDR is defined to include primary signal and exclude
+#'   both secondary signal and null.
+#'
 #' @param q Vector of quantiles.
 #' @inheritParams BBUM_distribution
 #'

@@ -10,6 +10,7 @@ BBUM_apply = function(
   df,
   add_starts, only_start,
   limits,
+  pBBUM.alpha,
   auto_outliers, rthres,
   rtrimmax, atrimmax,
   quiet
@@ -22,7 +23,7 @@ BBUM_apply = function(
     stop("Missing cols in df!")
   }
 
-  # Model BBUM on negative fold change miRs ----
+  # Model BBUM on background set genes ----
   # Get appropriate inputs
   df.filtered = df %>%
     dplyr::mutate(pvalue.filtered = dplyr::if_else(
@@ -37,6 +38,7 @@ BBUM_apply = function(
     add_starts = add_starts,
     only_start = only_start,
     limits = limits,
+    pBBUM.alpha = pBBUM.alpha,
     auto_outliers = auto_outliers,
     rthres = rthres,
     rtrimmax = rtrimmax,

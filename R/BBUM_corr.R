@@ -1,7 +1,7 @@
 #' BBUM FDR correction of p values
 #'
-#' Fits the BBUM model on the data, and transforms raw p values into values
-#'   corrected for false discovery rate (FDR) of null **and** secondary effects
+#' Fits the BBUM model on the dataset, and transforms raw p values into values
+#'   corrected for false discovery rate (FDR) of null **and** secondary signal
 #'   according to the BBUM model, as multiple testing correction. Optionally, it
 #'   automatically detects extreme value outliers among the background set, and
 #'   resolves correction issues by trimming the outliers.
@@ -10,8 +10,9 @@
 #'   background sets.
 #' @inheritParams BBUM_fit
 #' @param add_starts List of named vectors for additional starts of fitting
-#'   algorithm.
-#' @param only_start Whether the algorithm should only use the given starts to fit.
+#'   algorithm beyond the default set.
+#' @param only_start Whether the algorithm should only use the given starts
+#'   (\code{add_starts}) to fit.
 #' @param auto_outliers Toggle automatic outlier trimming.
 #' @param rtrimmax Maximum fraction of data points allowed to be outliers in the
 #'   background set of data (to be trimmed).
@@ -32,14 +33,27 @@
 #' @details \code{pBBUM} represents the expected overall FDR level if the cutoff
 #'   were set at that particular p value. This is similar to the interpretation
 #'   of p values corrected through the typical \code{p.adjust(method = "fdr")}.
+#' @details \code{pBBUM} values are designed for the signal set p values only,
+#'   Values for the background set are given but not valid as significance
+#'   testing adjustment, and so should **not** be used to call any hits. They
+#'   are provided primarily to compare the equivalent transformation against the
+#'   signal set to assess the adjustment strategy. The background set should
+#'   **not** be considered for hits.
+#' @details \code{BBUM_corr} functions best with p values filtered for poor
+#'   quality data points in prior. Such points tend to have high p values and
+#'   may disrupt the uniform null distribution.
 #' @details Default starts for BBUM fitting are implemented. If additional
 #'   starts should included, or only custom starts should be considered, make
 #'   use of \code{add_starts} and/or \code{only_start} arguments.
-#' @details If more than one start achieved the identical maximum likelihood,
-#'   A random start is chosen among them.
+#' @details If more than one start achieved the identical likelihood, a random
+#'   start is chosen among them.
 #' @details Automatic outlier detection relies on the model fitting a value of
-#'   \code{r > 1}. For benchmarking of the trimming strategy, see
-#'   Wang & Bartel, 2021.
+#'   \code{r > 1}. Such a result suggests that a stronger signal (presumably
+#'   outliers) exists in the background set than in the signal set, which
+#'   violates the assumptions of the model. This is a *conservative* strategy.
+#'   The ideal way to deal with outliers is to identify and handle them before
+#'   any statistical analyses. For benchmarking of the trimming strategy, see
+#'   Wang & Bartel, 2022.
 #' @details Adding too many starts or allowing too much outlier trimming can
 #'   increase computation time.
 #'
@@ -64,6 +78,7 @@ BBUM_corr = function(
   pvals, signal_set,
   add_starts = list(), only_start = FALSE,
   limits = list(),
+  pBBUM.alpha = 0.05,
   auto_outliers = TRUE, rthres = 1,
   rtrimmax = 0.05, atrimmax = 10,
   quiet = FALSE) {
@@ -82,7 +97,7 @@ BBUM_corr = function(
     # Use multi-start
     start.tries = c(
       # Concatenate lists of different starts
-      BBUM_startgen(limits = limits),
+      BBUM_startgen(limits = limits, pBBUM.alpha = pBBUM.alpha),
       add_starts
     )
   } else if (length(add_starts) > 0){
@@ -92,10 +107,10 @@ BBUM_corr = function(
     stop("No starts were given to fit!")
   }
   start.tries.input = start.tries %>%
-    lapply(., BBUM_params_toReal, limits = limits, rcap = FALSE)
+    lapply(., BBUM_params_toReal, limits = limits, rcap = FALSE, pBBUM.alpha = pBBUM.alpha)
     # turn into logit-transformed values
   start.tries.input.cap = start.tries %>%
-    lapply(., BBUM_params_toReal, limits = limits, rcap = TRUE)
+    lapply(., BBUM_params_toReal, limits = limits, rcap = TRUE,  pBBUM.alpha = pBBUM.alpha)
     # turn into logit-transformed values
 
   # Fitting ----
@@ -108,6 +123,7 @@ BBUM_corr = function(
     starts = start.tries.input,
     limits = limits,
     rcap = FALSE,
+    pBBUM.alpha = pBBUM.alpha,
     outlier_trim = outlier_trim,
     rthres = rthres
   )
@@ -129,6 +145,7 @@ BBUM_corr = function(
       starts = start.tries.input.cap,
       limits = limits,
       rcap = TRUE,
+      pBBUM.alpha = pBBUM.alpha,
       outlier_trim = outlier_trim,
       rthres = rthres
     )
@@ -147,12 +164,15 @@ BBUM_corr = function(
       print_additional_outliers = TRUE
       outlier_trim = outlier_trim + 1  # step up!
 
+      if(!quiet){ print(paste0(">> Trying to trim outliers x ", outlier_trim, "...")) }
+
       best.fit.i = BBUM_fit(
         dt_signal_set = dt_signal_set,
         dt_bg_set = dt_bg_set,
         starts = start.tries.input,
         limits = limits,
         rcap = FALSE,
+        pBBUM.alpha = pBBUM.alpha,
         outlier_trim = outlier_trim,
         rthres = rthres
       )
@@ -177,6 +197,7 @@ BBUM_corr = function(
       starts = start.tries.input.cap,
       limits = limits,
       rcap = TRUE,
+      pBBUM.alpha = pBBUM.alpha,
       outlier_trim = outlier_trim,
       rthres = rthres
     )

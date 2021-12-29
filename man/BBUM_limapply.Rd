@@ -4,7 +4,7 @@
 \alias{BBUM_limapply}
 \title{Rescaling guess values}
 \usage{
-BBUM_limapply(props, limits = list())
+BBUM_limapply(props, limits = list(), pBBUM.alpha)
 }
 \arguments{
 \item{props}{Named list of parameter guess as proportions defined in
@@ -12,6 +12,10 @@ BBUM_limapply(props, limits = list())
 
 \item{limits}{Named list of custom limits for specific paramters. Parameters
 not mentioned would be default values.}
+
+\item{pBBUM.alpha}{Cutoff level of BBUM-FDR-adjusted p values for
+significance testing. Only used here to generate appropriate default
+limits.}
 }
 \description{
 Transformer of guess values defined in \code{[0, 1]} to whatever the limits

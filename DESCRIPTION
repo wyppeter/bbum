@@ -1,6 +1,6 @@
 Package: bbum
 Title: BBUM correction for significance testing of p values
-Version: 0.36
+Version: 1.0
 Authors@R: 
     person(given = "Peter Y.",
            family = "Wang",
@@ -8,12 +8,12 @@ Authors@R:
            email = "pywang@mit.edu",
            comment = c(ORCID = "0000-0002-6129-2815",
                        Advisor = "David P. Bartel"))
-Description: Standard multiple testing correction methods 
-    cannot distinguish dominant primary effects from 
-    background secondary effects above null. A bi-beta-uniform 
-    mixture (BBUM) model allows the modeling and correction
-    for the false discovery rate (FDR) to exclude both null and 
-    secondary effects.
+Description: Standard multiple testing correction methods cannot directly handle
+    datasets that contain a background secondary signal confounding the primary 
+    signal of interest. This package describes and applies the bi-beta-uniform 
+    mixture (BBUM) model to adjust p values. It allows a modified estimation of 
+    false discovery rate (FDR) that takes into consideration the secondary 
+    signal in the background that needs to be excluded.
 License: MIT + file LICENSE
 Encoding: UTF-8
 LazyData: true
