@@ -14,6 +14,7 @@ BBUM_apply(
   rthres,
   rtrimmax,
   atrimmax,
+  two_tailed,
   quiet
 )
 }
@@ -44,6 +45,10 @@ background set of data (to be trimmed).}
 
 \item{atrimmax}{Maximum absolute number of data points allowed to be outliers
 in the background set of data (to be trimmed).}
+
+\item{two_tailed}{Toggle the "two-tailed" case of BBUM correction, if the
+background assumption is weak and bona fide hits in the background class
+are relevant. See Details. Default behavior is off.}
 
 \item{quiet}{Suppress printed messages and warnings.}
 }

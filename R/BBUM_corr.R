@@ -17,7 +17,10 @@
 #' @param rtrimmax Maximum fraction of data points allowed to be outliers in the
 #'   background set of data (to be trimmed).
 #' @param atrimmax Maximum absolute number of data points allowed to be outliers
-#'  in the background set of data (to be trimmed).
+#'   in the background set of data (to be trimmed).
+#' @param two_tailed Toggle the "two-tailed" case of BBUM correction, if the
+#'   background assumption is weak and bona fide hits in the background class
+#'   are relevant. See Details. Default behavior is off.
 #' @param quiet Suppress printed messages and warnings.
 #'
 #' @return A named list with the following items:
@@ -56,6 +59,13 @@
 #'   Wang & Bartel, 2022.
 #' @details Adding too many starts or allowing too much outlier trimming can
 #'   increase computation time.
+#' @details  If the background assumption is weak, such that a small number
+#'   of bona fide hits are anticipated and relevant to the hypothesis at
+#'   hand among the data points designated "background class", the FDR could be
+#'   made to include the background class. This is akin to a two-tailed test
+#'   (despite a one-tailed assumption to begin with). This would allow the
+#'   generation of genuine FDR-corrected p values for the background class
+#'   points as well. Toggle this using the \code{two_tailed} value.
 #'
 #' @examples
 #' BBUM_corr(
@@ -81,6 +91,7 @@ BBUM_corr = function(
   pBBUM.alpha = 0.05,
   auto_outliers = TRUE, rthres = 1,
   rtrimmax = 0.05, atrimmax = 10,
+  two_tailed = FALSE,
   quiet = FALSE) {
 
   # Check inputs and initiate fit ----
@@ -134,8 +145,10 @@ BBUM_corr = function(
 
     # Auto trim DISABLED: just check for issues if we are not in quiet mode
 
+    print_additional_outliers = FALSE
+
     if(!quiet && !r.pass.i) {
-      warning(">> r converges at >= 1: Violation of distribution assumptions. r constrained to < 1. Results are not accurate.")
+      warning(">> r may converge at >= 1: Possible violation of distribution assumptions. r constrained to < 1. Make sure to check fit model; results may not be accurate if r ~ 1.")
     }
 
     # Re-fit, now cap theta
@@ -186,7 +199,7 @@ BBUM_corr = function(
       outlier_trim = 0
       print_additional_outliers = FALSE
       if(!quiet) {
-        warning(">> Failed to trim outliers to resolve the violation of distribution assumptions. r converges at >= 1. r constrained to < 1. Results are not accurate.")
+        warning(">> Failed to trim outliers to resolve the possible violation of distribution assumptions. r may converge at >= 1. r constrained to < 1. Make sure to check fit model; results may not be accurate if r ~ 1.")
       }
     }
 
@@ -225,9 +238,18 @@ BBUM_corr = function(
   }
 
   # BBUM transform and multiple testing correction (FDR) ----
-  pBBUMs = BBUM_FDR(pvals,
-                    val.l,  val.a, val.th, val.r
-                    )
+  #####
+  if (two_tailed) {
+    dataratio = length(dt_signal_set)/length(dt_bg_set)
+    pBBUMs = BBUM_FDR(q = pvals,
+                      lambda = val.l, a = val.a, theta = val.th, r = val.r,
+                      dtratio = dataratio
+    )
+  } else {
+    pBBUMs = BBUM_FDR(q = pvals,
+                      lambda = val.l, a = val.a, theta = val.th, r = val.r
+    )
+  }
 
   # Additional outlier notice
   if(!quiet && print_additional_outliers){

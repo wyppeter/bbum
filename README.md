@@ -7,21 +7,21 @@ BBUM correction for significance testing of *p* values
 
 ## Description
 
-Standard multiple testing correction methods cannot directly handle
-datasets that contain a background secondary signal confounding the
-primary signal of interest. This package describes and applies the
-bi-beta-uniform mixture (BBUM) model to adjust p values. It allows a
-modified estimation of false discovery rate (FDR) that takes into
-consideration the secondary signal in the background that needs to be
-excluded.
+Standard multiple testing correction methods are not sufficient to
+directly handle datasets that contain a background secondary signal
+confounding the primary signal of interest. This package describes and
+applies the bi-beta-uniform mixture (BBUM) model to adjust p values. It
+allows a modified estimation of false discovery rate (FDR) that takes
+into consideration the secondary signal in the background that needs to
+be excluded.
 
 BBUM requires two datasets or one dataset split into two subsets. One
-set (**signal set**, or **sample set**) contains a mixture of the
-desired primary signal points, secondary signal points, and null data
-points in some distribution. The other set (**background set**) contains
-a mixture of data points in an analogous distribution, except from the
-primary signal. This allows the modeling of the background distribution
-using the background set to assess the signal set under FDR.
+set (*signal set*, or *sample set*) contains a mixture of the desired
+primary signal points, secondary signal points, and null data points in
+some distribution. The other set (*background set*) contains a mixture
+of data points in an analogous distribution, except from the primary
+signal. This allows the modeling of the background distribution using
+the background set to assess the signal set under FDR.
 
 ------------------------------------------------------------------------
 

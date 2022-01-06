@@ -94,6 +94,7 @@ BBUM_plot = function(
   # Set up inputs ----
   plot.option = tolower(option[1])
   df.bbum = df.bbum %>%
+    ungroup() %>%
     dplyr::filter(!excluded)
   # BBUM.l  = df.bbum$BBUM.l  %>% unique()
   # BBUM.a  = df.bbum$BBUM.a  %>% unique()
@@ -123,7 +124,8 @@ BBUM_plot = function(
   down_lim.trans = 10^(topp %>% dplyr::pull(pBBUM) %>% log10() %>% mean())
   pdir.lim = df.bbum %>%
     dplyr::filter(!BBUM.class) %>% dplyr::pull(pvalue) %>%
-    min() %>% -log10(.) %>% ceiling(.)+1
+    stats::quantile(., probs = 0.01, na.rm = T, names = F) %>%
+    -log10(.) %>% ceiling(.)+1
   pdir.breaks = seq(-350, 350,
                     dplyr::if_else(pdir.lim >= 10,
                                    ceiling((pdir.lim/3)/10)*10,
@@ -396,8 +398,8 @@ BBUM_plot = function(
                                    color = BBUM.fct,
                                    group = geneName
       )) +
+      ggplot2::geom_path(alpha = 0.3, size = 0.25) +
       ggplot2::geom_point(alpha = 0.6, shape = 16) +
-      ggplot2::geom_path(alpha = 0.2, size = 0.25) +
       ggplot2::scale_color_manual(
         breaks = c("none","hit","outlier"),
         values = c(
@@ -413,6 +415,7 @@ BBUM_plot = function(
                           linetype = "dashed") +
       ggplot2::scale_x_continuous(breaks = pdir.breaks,
                                   labels = 10^-abs(pdir.breaks)) +
+      ggplot2::scale_y_discrete(limits = rev) +
       ggplot2::coord_cartesian(xlim = c(-pdir.lim, pdir.lim*2)) +
       ggplot2::labs(x = "Value", y = "Statistic",
                     title = "Correction of p values",

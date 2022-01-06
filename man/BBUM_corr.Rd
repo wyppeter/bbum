@@ -15,6 +15,7 @@ BBUM_corr(
   rthres = 1,
   rtrimmax = 0.05,
   atrimmax = 10,
+  two_tailed = FALSE,
   quiet = FALSE
 )
 }
@@ -50,6 +51,10 @@ background set of data (to be trimmed).}
 
 \item{atrimmax}{Maximum absolute number of data points allowed to be outliers
 in the background set of data (to be trimmed).}
+
+\item{two_tailed}{Toggle the "two-tailed" case of BBUM correction, if the
+background assumption is weak and bona fide hits in the background class
+are relevant. See Details. Default behavior is off.}
 
 \item{quiet}{Suppress printed messages and warnings.}
 }
@@ -106,6 +111,14 @@ Wang & Bartel, 2022.
 
 Adding too many starts or allowing too much outlier trimming can
 increase computation time.
+
+If the background assumption is weak, such that a small number
+of bona fide hits are anticipated and relevant to the hypothesis at
+hand among the data points designated "background class", the FDR could be
+made to include the background class. This is akin to a two-tailed test
+(despite a one-tailed assumption to begin with). This would allow the
+generation of genuine FDR-corrected p values for the background class
+points as well. Toggle this using the \code{two_tailed} value.
 }
 \examples{
 BBUM_corr(

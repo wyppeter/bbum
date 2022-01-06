@@ -75,6 +75,13 @@
 #'   Wang & Bartel, 2022.
 #' @details Adding too many starts or allowing too much outlier trimming can
 #'   increase computation time.
+#' @details  If the background assumption is weak, such that a small number
+#'   of bona fide hits are anticipated and relevant to the hypothesis at
+#'   hand among the data points designated "background class", the FDR could be
+#'   made to include the background class. This is akin to a two-tailed test
+#'   (despite a one-tailed assumption to begin with). This would allow the
+#'   generation of genuine FDR-corrected p values for the background class
+#'   points as well. Toggle this using the \code{two_tailed} value.
 #'
 #' @return A \code{tibble} based on the input results table, with added
 #'   columns from BBUM correction and significance calling:
@@ -131,6 +138,7 @@ BBUM_DEcorr = function(
   limits = list(),
   auto_outliers = TRUE, rthres = 1,
   rtrimmax = 0.05, atrimmax = 10,
+  two_tailed = FALSE,
   quiet = FALSE
 ) {
 
@@ -192,6 +200,7 @@ BBUM_DEcorr = function(
       rthres = rthres,
       rtrimmax = rtrimmax,
       atrimmax = atrimmax,
+      two_tailed = two_tailed,
       quiet = quiet
     )
 
@@ -200,7 +209,7 @@ BBUM_DEcorr = function(
     dplyr::mutate(
       BBUM.hits = !outlier &
         dplyr::if_else(is.na(pBBUM), FALSE, pBBUM < pBBUM.alpha) &  # pBBUM criterion
-        BBUM.class, # Call primary effect hits
+        (two_tailed | BBUM.class), # Call primary effect hits
       BBUM.fct = factor(
         dplyr::if_else(
           BBUM.hits,
@@ -226,22 +235,6 @@ BBUM_DEcorr = function(
     if(c_hits > 0){
       print(as.character(hits))
     }
-
-    # Check hit rate and in comparison with theoretical hit rate from the fitted distribution
-    c_N_pos = nrow(df.bbum %>% dplyr::filter(!excluded, !outlier, BBUM.class))
-      # number of points in sample class
-    # Hit counts calculations
-    c_hits.empi = c_hits * (1-pBBUM.alpha)
-    c_hits.theo = BBUM_expectedhits(
-      BBUM.out,
-      pBBUM.alpha,
-      n = c_N_pos
-    )
-    print(paste0(">> Empirical true-hit count estimate: ",
-                 round(c_hits.empi, 1),
-                 ", theoretical true-hit count estimate: ",
-                 round(c_hits.theo, 1)
-    ))
   }
 
   # Restore how the input df was ----

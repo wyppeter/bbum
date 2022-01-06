@@ -4,7 +4,7 @@
 \alias{BBUM_FDR}
 \title{False discovery rate by the BBUM model}
 \usage{
-BBUM_FDR(q, lambda, a, theta, r)
+BBUM_FDR(q, lambda, a, theta, r, dtratio = Inf)
 }
 \arguments{
 \item{q}{Vector of quantiles.}
@@ -24,6 +24,11 @@ of primary beta distribution density over all density.}
 shape parameter of the primary beta distribution over that of the secondary
 beta distribution. In other words, \code{a*r} is the shape parameter
 for the primary beta distribution component.}
+
+\item{dtratio}{If using the "two-tailed" case of BBUM correction, provide
+the ratio of number of data points in the signal class over that in the
+background class. Leave as \code{Inf} for the "one-tailed" case (the
+default). See Details.}
 }
 \value{
 A vector of FDR values at each value of \code{q}.
@@ -35,9 +40,21 @@ A vector of FDR values at each value of \code{q}.
 \details{
 This modifed FDR is defined to include primary signal and exclude
 both secondary signal and null.
+
+If the background assumption is weak, such that a small number
+of bona fide hits are anticipated and relevant to the hypothesis at
+hand among the data points designated "background class", the FDR could be
+made to include the background class. This is akin to a two-tailed test
+(despite a one-tailed assumption to begin with). This would allow the
+generation of genuine FDR-corrected p values for the background class
+points as well. Toggle this using the \code{dtratio} value.
 }
 \examples{
+# Default
 BBUM_FDR(q = c(0.001, 0.007, 0.19, 0.5, 0.99),
   lambda = 0.65, a = 0.1, theta = 0.02, r = 0.07)
+# "Two-tailed"
+BBUM_FDR(q = c(0.001, 0.007, 0.19, 0.5, 0.99),
+  lambda = 0.65, a = 0.1, theta = 0.02, r = 0.07, dtratio = 1.13)
 
 }

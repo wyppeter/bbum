@@ -13,6 +13,7 @@ BBUM_apply = function(
   pBBUM.alpha,
   auto_outliers, rthres,
   rtrimmax, atrimmax,
+  two_tailed,
   quiet
 ) {
 
@@ -43,6 +44,7 @@ BBUM_apply = function(
     rthres = rthres,
     rtrimmax = rtrimmax,
     atrimmax = atrimmax,
+    two_tailed = two_tailed,
     quiet = quiet
   )
 
