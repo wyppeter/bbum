@@ -172,7 +172,7 @@ BBUM_DEcorr = function(
   # Process read cutoff and other filtering
   allGeneNames = as.character(dplyr::pull(df.res, geneName))
   meets.cutoff = allGeneNames[!allGeneNames %in% excluded]
-  if(length(meets.cutoff) < 10){ stop("Number of genes meeting cutoff (not excluded) is too small!") }
+  if(length(meets.cutoff) < 10){ stop("Number of genes not excluded is too small!") }
 
   # Process outlier filter
   outliers = outliers[outliers %in% meets.cutoff]

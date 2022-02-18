@@ -1,7 +1,8 @@
 #' False discovery rate by the BBUM model
 #'
 #' \code{BBUM_FDR} computes the false discovery rate (FDR) value at quantiles
-#'   \code{q} according to the given parameters of the BBUM distribution.
+#'   \code{q} (raw p-values) according to the given parameters of the BBUM
+#'   distribution.
 #'
 #' @details This modifed FDR is defined to include primary signal and exclude
 #'   both secondary signal and null.

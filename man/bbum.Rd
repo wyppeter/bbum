@@ -3,12 +3,12 @@
 \docType{package}
 \name{bbum}
 \alias{bbum}
-\title{bbum: A package for correcting for secondary effects signals in multiple testing}
+\title{bbum: A package to account for secondary effects signal in multiple testing}
 \description{
 Standard multiple testing correction methods cannot directly handle datasets
-that contain a background secondary signal confounding the primary signal
-of interest. A bi-beta-uniform mixture (BBUM) model allows the modeling
-and correction for the false discovery rate (FDR) of both null and
+that contain a weaker background secondary signal confounding the primary
+signal of interest. A bi-beta-uniform mixture (BBUM) model allows the
+modeling and correction for the false discovery rate (FDR) of both null and
 secondary effects.
 }
 \section{Authors}{
@@ -20,7 +20,9 @@ secondary effects.
 }
 
 \references{
-Wang PY, Bartel DP. 2022. TBD. \emph{bioRxiv}. doi:TBD
+Wang PY, Bartel DP. 2022. A statistical approach for identifying primary
+substrates of ZSWIM8-mediated microRNA degradation in small-RNA sequencing
+data. \emph{bioRxiv}. doi:TBD
 
 Markitsis A, Lai Y. 2010. A censored beta mixture model for the estimation of
 the proportion of non-differentially expressed genes. \emph{Bioinformatics}

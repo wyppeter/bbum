@@ -9,6 +9,10 @@
 #'   only the first element is used. Ignores case.
 #' @param expressionCol A \code{str} of the name of the column used for the x
 #'   axis of the MA graph. (Only for \code{option = "MA"}.)
+#' @param two_tailed Toggle the "two-tailed" case of BBUM correction, if the
+#'   background assumption is weak and bona fide hits in the background class
+#'   are relevant. See Details. Default behavior is off. (Only for
+#'   \code{option = "confusion"}.)
 #' @inheritParams BBUM_DEcorr
 #'
 #' @details The argument \code{expressionCol} allows plotting the MA graph
@@ -37,6 +41,9 @@
 #'   hits, with \code{-log10(0)} as the mid-point instead of the median. Uses
 #'   subsampling to account for the different number of points in the signal and
 #'   background sets.
+#' * \code{confusion}: Plot of expected FDR, sensitivity, and specificity at
+#'   each value of raw p-values, which shows the trade-off between these metrics
+#'   for the given dataset's BBUM model.
 #' @details The most critical region of BBUM distribution for an appropriate
 #'   correction for secondary effects is the "left-tail" around 0, where both
 #'   primary and secondary beta components peak. An ECDF graph in log scale
@@ -64,7 +71,9 @@
 #' BBUM_plot(df.bbum = res.BBUMcorr,
 #'           option = "ecdf_log",
 #'           expressionCol = "WTmean",
-#'           pBBUM.alpha = 0.01)
+#'           pBBUM.alpha = 0.01,
+#'           two_tailed = FALSE
+#'           )
 #' }
 #'
 #' @export
@@ -77,10 +86,12 @@ BBUM_plot = function(
     "ecdf.corr", "ecdf_log.corr",
     "pp",
     "pcorr",
-    "symm"
+    "symm",
+    "confusion"
   ),
   expressionCol = "baseMean",
-  pBBUM.alpha = 0.05
+  pBBUM.alpha = 0.05,
+  two_tailed = FALSE
 ) {
 
   # Set up theme ----
@@ -96,6 +107,9 @@ BBUM_plot = function(
   df.bbum = df.bbum %>%
     ungroup() %>%
     dplyr::filter(!excluded)
+  coefs = df.bbum %>%
+    dplyr::select(BBUM.l, BBUM.a, BBUM.th, BBUM.r) %>%
+    dplyr::distinct()
   # BBUM.l  = df.bbum$BBUM.l  %>% unique()
   # BBUM.a  = df.bbum$BBUM.a  %>% unique()
   BBUM.th = df.bbum$BBUM.th %>% unique()
@@ -103,9 +117,7 @@ BBUM_plot = function(
   bbum.model.graph = tibble::tibble(
     p = sort(c(10^seq(-300,-3,0.05), seq(1E-3,1,1E-3)))
     ) %>%
-    tidyr::crossing(df.bbum %>%
-                      dplyr::select(BBUM.l, BBUM.a, BBUM.th, BBUM.r) %>%
-                      dplyr::distinct()) %>%
+    tidyr::crossing(coefs) %>%
     dplyr::mutate(dbum.model  = dbum(p, BBUM.l, BBUM.a),
                   pbum.model  = pbum(p, BBUM.l, BBUM.a),
                   dbbum.model = dbbum(p, BBUM.l, BBUM.a, BBUM.th, BBUM.r),
@@ -493,6 +505,68 @@ BBUM_plot = function(
                     title = "Symmetry plot of non-hits p values",
                     color = "Estimated fraction of primary effects") +
       ggplot2::theme_classic(base_size = 12) + customtheme
+    )
+
+  } else if(plot.option == "confusion") {
+
+    ## Confusion matrix plot ----
+    data.halves = df.bbum %>%
+      dplyr::filter(!is.na(pvalue), !excluded, !outlier) %>%
+      dplyr::group_by(BBUM.class) %>%
+      dplyr::tally() %>%
+      dplyr::arrange(BBUM.class) %>%
+      dplyr::pull(n)
+    dtratio = dplyr::if_else(
+      two_tailed,
+      data.halves[2]/data.halves[1],
+      Inf
+    )
+    confusion.graph = tibble::tibble(
+      p = sort(c(10^seq(-300,-3,0.05), seq(1E-3,1,1E-3)))
+    ) %>%
+      tidyr::crossing(coefs) %>%
+      dplyr::mutate(
+        FDR = BBUM_FDR(p,
+                 BBUM.l, BBUM.a, BBUM.th, BBUM.r,
+                 dtratio = dtratio),
+        sensitivity = BBUM_expperf(p,
+                                   BBUM.l, BBUM.a, BBUM.th, BBUM.r,
+                                   dtratio = dtratio
+        )$sensitivity,
+        specificity = BBUM_expperf(p,
+                                   BBUM.l, BBUM.a, BBUM.th, BBUM.r,
+                                   dtratio = dtratio
+        )$specificity
+      ) %>%
+      tidyr::pivot_longer(cols = c("FDR","sensitivity","specificity"),
+                            names_to = "metric", values_to = "val")
+    p_at_cutoff = confusion.graph %>%
+      dplyr::filter(metric == "FDR",
+                    val < pBBUM.alpha) %>%
+      dplyr::arrange(-val) %>%
+      dplyr::slice(1) %>%
+      dplyr::pull(p)
+    return(confusion.graph %>%
+             ggplot2::ggplot(ggplot2::aes(y = val, x = p,
+                                          color = metric
+             )) +
+             ggplot2::geom_line(alpha = 0.75, size = 0.5) +
+             ggplot2::scale_color_manual(
+               breaks = c("FDR","sensitivity","specificity"),
+               values = c(
+                 "mediumpurple4",
+                 "palegreen3",
+                 "tan3"
+               )) +
+             ggplot2::geom_vline(xintercept = p_at_cutoff,
+                                 color = "mediumpurple4", alpha = 0.5, size = 0.5,
+                                 linetype = "dashed") +
+             ggplot2::scale_x_continuous(trans = "log10") +
+             ggplot2::coord_cartesian(xlim = c(down_lim,1)) +
+             ggplot2::labs(x = "p-value", y = "Metric value",
+                           title = "Confusion matrix metrics",
+                           color = "Metric") +
+             ggplot2::theme_classic(base_size = 12) + customtheme
     )
 
   } else {

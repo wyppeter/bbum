@@ -171,7 +171,7 @@ BBUM_corr = function(
     trim_max = min(floor(length(dt_bg_set) * rtrimmax), atrimmax)
     print_additional_outliers = FALSE
 
-    while(!r.pass.i && outlier_trim <= trim_max) {
+    while(!r.pass.i && outlier_trim < trim_max) {
 
       # If r does not pass the test, start trimming from the bg set
       print_additional_outliers = TRUE
@@ -235,6 +235,8 @@ BBUM_corr = function(
       "; theta = ", signif(val.th, 3),
       "; r = ",     signif(val.r, 3)
       ))
+
+
   }
 
   # BBUM transform and multiple testing correction (FDR) ----

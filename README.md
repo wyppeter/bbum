@@ -3,17 +3,17 @@
 
 # bbum <img src='man/figures/logo.png' align="right" height="139" />
 
-BBUM correction for significance testing of *p* values
+BBUM correction for significance testing of p values
 
 ## Description
 
 Standard multiple testing correction methods are not sufficient to
-directly handle datasets that contain a background secondary signal
-confounding the primary signal of interest. This package describes and
-applies the bi-beta-uniform mixture (BBUM) model to adjust p values. It
-allows a modified estimation of false discovery rate (FDR) that takes
-into consideration the secondary signal in the background that needs to
-be excluded.
+directly handle datasets that contain a weaker background secondary
+signal confounding the primary signal of interest. This package
+describes and applies the bi-beta-uniform mixture (BBUM) model to adjust
+p values. It allows a modified estimation of false discovery rate (FDR)
+that takes into consideration the secondary signal in the background
+that needs to be excluded.
 
 BBUM requires two datasets or one dataset split into two subsets. One
 set (*signal set*, or *sample set*) contains a mixture of the desired
@@ -63,7 +63,9 @@ pbum(q = c(0.013, 0.04, 0.93, 0.8), lambda = 0.73, a = 0.02)
 ```
 
 Typical usage for p value fitting and/or correction would make use of
-one of these three functions, depending on the level of work needed:
+one of these three functions, depending on the level of work needed.
+
+If you only want a BBUM model fit based on a dataset, call `BBUM_fit`.
 
 ``` r
 # BBUM_fit: Simple fitting to the model ----
@@ -76,6 +78,10 @@ BBUM_fit(
   starts = list(c(lambda = 0.9, a = 0.6, theta = 0.1, r = 0.1))
 )
 ```
+
+If you want a BBUM-FDR-adjusted p values (pBBUM) for a set of p-values,
+call `BBUM_corr`. It invokes `BBUM_fit` and then calculates the FDR, and
+will be only function you need.
 
 ``` r
 # BBUM_corr: p value adjustment/correction for FDR ----
@@ -91,6 +97,11 @@ BBUM_corr(
                     TRUE,  TRUE,  TRUE,  TRUE,  TRUE,  TRUE,  TRUE,  TRUE,  TRUE)
 )
 ```
+
+If you want BBUM-FDR correction of p-values in a DESeq dataset table
+(name, log fold change, raw p-values, and a custom classifying column to
+divide the data in half), call `BBUM_DEcorr`. It invokes `BBUM_corr` and
+will be only function you need.
 
 ``` r
 # BBUM_DEcorr: Data frame table processing and significance calling ----
@@ -137,15 +148,14 @@ documentation in the package:
 ## References
 
 This package was created by Peter Y. Wang (@wyppeter) in David Bartel’s
-lab. For more details on the theoretical basis, usage, and benchmarking
-of the package, refer to the preprint at:
+lab in the Whitehead Institute. For more details on the theoretical
+basis, usage, and benchmarking of the package, refer to the preprint at:
 
-> Wang PY, Bartel DP. 2022. TBD. *bioRxiv*. <doi:TBD>
+> Wang PY, Bartel DP. 2022. A statistical approach for identifying
+> primary substrates of ZSWIM8-mediated microRNA degradation in
+> small-RNA sequencing data. *bioRxiv*. <doi:TBD>
 
-Key references:
-
-> Donahue RMJ. 1999. A Note on Information Seldom Reported via the P
-> Value. *The American Statistician* **53**:303–306.
+References:
 
 > Pounds S, Morris SW. 2003. Estimating the occurrence of false
 > positives and false negatives in microarray studies by approximating

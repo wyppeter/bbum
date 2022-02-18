@@ -7,9 +7,10 @@
 BBUM_plot(
   df.bbum,
   option = c("MA", "volcano", "hist", "ecdf", "ecdf_log", "ecdf.corr", "ecdf_log.corr",
-    "pp", "pcorr", "symm"),
+    "pp", "pcorr", "symm", "confusion"),
   expressionCol = "baseMean",
-  pBBUM.alpha = 0.05
+  pBBUM.alpha = 0.05,
+  two_tailed = FALSE
 )
 }
 \arguments{
@@ -23,6 +24,11 @@ only the first element is used. Ignores case.}
 axis of the MA graph. (Only for \code{option = "MA"}.)}
 
 \item{pBBUM.alpha}{Cutoff level of \code{pBBUM} for significance calling.}
+
+\item{two_tailed}{Toggle the "two-tailed" case of BBUM correction, if the
+background assumption is weak and bona fide hits in the background class
+are relevant. See Details. Default behavior is off. (Only for
+\code{option = "confusion"}.)}
 }
 \value{
 \code{ggplot2} plot object.
@@ -60,6 +66,9 @@ individual p values through the BBUM algorithm.
 hits, with \code{-log10(0)} as the mid-point instead of the median. Uses
 subsampling to account for the different number of points in the signal and
 background sets.
+\item \code{confusion}: Plot of expected FDR, sensitivity, and specificity at
+each value of raw p-values, which shows the trade-off between these metrics
+for the given dataset's BBUM model.
 }
 
 The most critical region of BBUM distribution for an appropriate
@@ -90,7 +99,9 @@ correction.
 BBUM_plot(df.bbum = res.BBUMcorr,
           option = "ecdf_log",
           expressionCol = "WTmean",
-          pBBUM.alpha = 0.01)
+          pBBUM.alpha = 0.01,
+          two_tailed = FALSE
+          )
 }
 
 }
