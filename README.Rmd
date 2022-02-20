@@ -138,7 +138,7 @@ For more details on included functions and how to use them, refer to documentati
 This package was created by Peter Y. Wang (@wyppeter) in David Bartel's lab in the Whitehead Institute.
 For more details on the theoretical basis, usage, and benchmarking of the package, refer to the preprint at:
 
-> Wang PY, Bartel DP. 2022. A statistical approach for identifying primary substrates of ZSWIM8-mediated microRNA degradation in small-RNA sequencing data. *bioRxiv*. doi:TBD
+> Wang PY, Bartel DP. 2022. A statistical approach for identifying primary substrates of ZSWIM8-mediated microRNA degradation in small-RNA sequencing data. *bioRxiv*. doi:10.1101/2022.02.17.480958
 
 References:
 

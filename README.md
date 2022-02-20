@@ -153,7 +153,7 @@ basis, usage, and benchmarking of the package, refer to the preprint at:
 
 > Wang PY, Bartel DP. 2022. A statistical approach for identifying
 > primary substrates of ZSWIM8-mediated microRNA degradation in
-> small-RNA sequencing data. *bioRxiv*. <doi:TBD>
+> small-RNA sequencing data. *bioRxiv*. <doi:10.1101/2022.02.17.480958>
 
 References:
 

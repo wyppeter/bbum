@@ -22,7 +22,7 @@ secondary effects.
 \references{
 Wang PY, Bartel DP. 2022. A statistical approach for identifying primary
 substrates of ZSWIM8-mediated microRNA degradation in small-RNA sequencing
-data. \emph{bioRxiv}. doi:TBD
+data. \emph{bioRxiv}. doi:10.1101/2022.02.17.480958
 
 Markitsis A, Lai Y. 2010. A censored beta mixture model for the estimation of
 the proportion of non-differentially expressed genes. \emph{Bioinformatics}
