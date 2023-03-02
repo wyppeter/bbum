@@ -119,6 +119,10 @@ made to include the background class. This is akin to a two-tailed test
 (despite a one-tailed assumption to begin with). This would allow the
 generation of genuine FDR-corrected p values for the background class
 points as well. Toggle this using the \code{two_tailed} value.
+
+Due to the asymptotic behavior of the function when any
+p values = 0, any p values < \code{.Machine$double.xmin*10} would be
+constrained to \code{.Machine$double.xmin*10}.
 }
 \examples{
 BBUM_corr(

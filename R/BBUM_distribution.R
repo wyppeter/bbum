@@ -7,7 +7,8 @@
 #'
 #' @name BBUM_distribution
 #'
-#' @param x,q Vector of quantiles.
+#' @param x Vector of quantiles.
+#' @param q Vector of quantiles.
 #' @param n Number of observations.
 #' @param lambda Vector of BBUM parameter \code{lambda}. *lambda* is the
 #'   fraction of null (uniform distribution density) over all density except the

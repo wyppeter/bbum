@@ -152,7 +152,7 @@ BBUM_plot = function(
                                    y = log2FoldChange,
                                    color = BBUM.fct)) +
       ggplot2::geom_hline(yintercept = 0, color = "black", alpha = 0.5,
-                          size = 0.5, linetype = "dashed") +
+                          linewidth = 0.5, linetype = "dashed") +
       ggplot2::geom_point(alpha = 0.75, size = 1, shape = 16) +
       ggplot2::scale_color_manual(
         breaks = c("none","hit","outlier"),
@@ -179,9 +179,9 @@ BBUM_plot = function(
                                    y = -log10(pvalue),
                                    color = BBUM.fct)) +
       ggplot2::geom_vline(xintercept = 0, color = "black", alpha = 0.5,
-                         size = 0.5) +
+                         linewidth = 0.5) +
       ggplot2::geom_hline(yintercept = 0, color = "black", alpha = 0.5,
-                          size = 0.5) +
+                          linewidth = 0.5) +
       ggplot2::geom_point(alpha = 0.75, size = 1, shape = 16) +
       ggplot2::scale_color_manual(
        breaks = c("none","hit","outlier"),
@@ -221,18 +221,18 @@ BBUM_plot = function(
         y = freq,
         color = factor(BBUM.class, levels = c(TRUE,FALSE)))) +
       ggplot2::geom_hline(yintercept = 0, color = "gray60", alpha = 0.75,
-                          size = 0.5) +
+                          linewidth = 0.5) +
       ggplot2::geom_vline(xintercept = c(0,1), color = "gray60", alpha = 0.75,
-                          size = 0.5) +
-      ggplot2::geom_step(stat = "identity", alpha = 0.75, size = 1) +
+                          linewidth = 0.5) +
+      ggplot2::geom_step(stat = "identity", alpha = 0.75, linewidth = 1) +
       ggplot2::geom_line(data = bbum.model.graph, inherit.aes = F,
                          ggplot2::aes(x = p, y = dbum.model*(1-BBUM.th)),
                          color = "goldenrod3",
-                         alpha = 0.5, size = 0.5) +
+                         alpha = 0.5, linewidth = 0.5) +
       ggplot2::geom_line(data = bbum.model.graph, inherit.aes = FALSE,
                          ggplot2::aes(x = p, y = dbbum.model),
                          color = "turquoise4",
-                         alpha = 0.5, size = 0.5) +
+                         alpha = 0.5, linewidth = 0.5) +
       ggplot2::scale_color_manual(breaks = c(FALSE, TRUE),
                                   values = c("goldenrod3","turquoise4"),
                                   labels = c("Background", "Signal")
@@ -251,20 +251,20 @@ BBUM_plot = function(
         x = pvalue,
         color = factor(BBUM.class, levels = c(TRUE,FALSE)))) +
       ggplot2::geom_hline(yintercept = 0, color = "gray60",
-                          alpha = 0.75, size = 0.5) +
+                          alpha = 0.75, linewidth = 0.5) +
       ggplot2::geom_vline(xintercept = c(0,1), color = "gray60",
-                          alpha = 0.75, size = 0.5) +
+                          alpha = 0.75, linewidth = 0.5) +
       ggplot2::geom_abline(slope = 1, intercept = 0, color = "gray60",
-                           alpha = 0.75, size = 0.7, linetype = "dashed") +
-      ggplot2::geom_step(stat = "ecdf", alpha = 0.75, size = 0.5) +
+                           alpha = 0.75, linewidth = 0.7, linetype = "dashed") +
+      ggplot2::geom_step(stat = "ecdf", alpha = 0.75, linewidth = 0.5) +
       ggplot2::geom_line(data = bbum.model.graph, inherit.aes = F,
                          ggplot2::aes(x = p, y = pbum.model),
                          color = "goldenrod3",
-                         alpha = 0.5, size = 0.7) +
+                         alpha = 0.5, linewidth = 0.7) +
       ggplot2::geom_line(data = bbum.model.graph, inherit.aes = FALSE,
                          ggplot2::aes(x = p, y = pbbum.model),
                          color = "turquoise4",
-                         alpha = 0.5, size = 0.7) +
+                         alpha = 0.5, linewidth = 0.7) +
       ggplot2::scale_color_manual(breaks = c(FALSE, TRUE),
                                   values = c("goldenrod3","turquoise4"),
                                   labels = c("Background", "Signal")
@@ -282,23 +282,23 @@ BBUM_plot = function(
         x = pvalue,
         color = factor(BBUM.class, levels = c(TRUE,FALSE)))) +
       ggplot2::geom_hline(yintercept = 0, color = "gray60",
-                          alpha = 0.75, size = 0.5) +
+                          alpha = 0.75, linewidth = 0.5) +
       ggplot2::geom_vline(xintercept = c(1), color = "gray60",
-                          alpha = 0.75, size = 0.5) +
+                          alpha = 0.75, linewidth = 0.5) +
       ggplot2::geom_line(data = tibble::tibble(
         pvalue     = 10^(seq(-10,0,0.01)),
         pvalue.lin = 10^(seq(-10,0,0.01))
       ), ggplot2::aes(y = pvalue.lin), color = "gray60", alpha = 0.75,
-      size = 0.7, linetype = "dashed") +
-      ggplot2::geom_step(stat = "ecdf", alpha = 0.75, size = 0.5) +
+      linewidth = 0.7, linetype = "dashed") +
+      ggplot2::geom_step(stat = "ecdf", alpha = 0.75, linewidth = 0.5) +
       ggplot2::geom_line(data = bbum.model.graph, inherit.aes = F,
                          ggplot2::aes(x = p, y = pbum.model),
                          color = "goldenrod3",
-                         alpha = 0.5, size = 0.7) +
+                         alpha = 0.5, linewidth = 0.7) +
       ggplot2::geom_line(data = bbum.model.graph, inherit.aes = FALSE,
                          ggplot2::aes(x = p, y = pbbum.model),
                          color = "turquoise4",
-                         alpha = 0.5, size = 0.7) +
+                         alpha = 0.5, linewidth = 0.7) +
       ggplot2::scale_color_manual(breaks = c(FALSE, TRUE),
                                   values = c("goldenrod3","turquoise4"),
                                   labels = c("Background", "Signal")
@@ -318,14 +318,14 @@ BBUM_plot = function(
         x = pBBUM,
         color = factor(BBUM.class, levels = c(TRUE,FALSE)))) +
       ggplot2::geom_hline(yintercept = 0, color = "gray60",
-                          alpha = 0.75, size = 0.5) +
+                          alpha = 0.75, linewidth = 0.5) +
       ggplot2::geom_vline(xintercept = c(0,1), color = "gray60",
-                          alpha = 0.75, size = 0.5) +
+                          alpha = 0.75, linewidth = 0.5) +
       ggplot2::geom_vline(xintercept = pBBUM.alpha, color = "salmon4",
-                          alpha = 0.75, size = 0.5, linetype = "dashed") +
+                          alpha = 0.75, linewidth = 0.5, linetype = "dashed") +
       ggplot2::geom_abline(slope = 1, intercept = 0, color = "gray60",
-                           alpha = 0.75, size = 0.7, linetype = "dashed") +
-      ggplot2::geom_step(stat = "ecdf", alpha = 0.75, size = 0.5) +
+                           alpha = 0.75, linewidth = 0.7, linetype = "dashed") +
+      ggplot2::geom_step(stat = "ecdf", alpha = 0.75, linewidth = 0.5) +
       ggplot2::scale_color_manual(breaks = c(FALSE, TRUE),
                                   values = c("goldenrod3","turquoise4"),
                                   labels = c("Background", "Signal")
@@ -343,12 +343,12 @@ BBUM_plot = function(
         x = pBBUM,
         color = factor(BBUM.class, levels = c(TRUE,FALSE)))) +
       ggplot2::geom_hline(yintercept = 0, color = "gray60",
-                          alpha = 0.75, size = 0.5) +
+                          alpha = 0.75, linewidth = 0.5) +
       ggplot2::geom_vline(xintercept = c(1), color = "gray60",
-                          alpha = 0.75, size = 0.5) +
+                          alpha = 0.75, linewidth = 0.5) +
       ggplot2::geom_vline(xintercept = pBBUM.alpha, color = "salmon4",
-                          alpha = 0.75, size = 0.5, linetype = "dashed") +
-      ggplot2::geom_step(stat = "ecdf", alpha = 0.75, size = 0.5) +
+                          alpha = 0.75, linewidth = 0.5, linetype = "dashed") +
+      ggplot2::geom_step(stat = "ecdf", alpha = 0.75, linewidth = 0.5) +
       ggplot2::scale_color_manual(breaks = c(FALSE, TRUE),
                                   values = c("goldenrod3","turquoise4"),
                                   labels = c("Background", "Signal")
@@ -380,12 +380,12 @@ BBUM_plot = function(
                x = p,
                color = factor(BBUM.class, levels = c(TRUE,FALSE)))) +
              ggplot2::geom_hline(yintercept = 0, color = "gray60",
-                                 alpha = 0.75, size = 0.5) +
+                                 alpha = 0.75, linewidth = 0.5) +
              ggplot2::geom_vline(xintercept = c(0,1), color = "gray60",
-                                 alpha = 0.75, size = 0.5) +
+                                 alpha = 0.75, linewidth = 0.5) +
              ggplot2::geom_abline(slope = 1, intercept = 0, color = "gray60",
-                                  alpha = 0.75, size = 0.7, linetype = "dashed") +
-             ggplot2::geom_step(stat = "ecdf", alpha = 0.75, size = 0.5) +
+                                  alpha = 0.75, linewidth = 0.7, linetype = "dashed") +
+             ggplot2::geom_step(stat = "ecdf", alpha = 0.75, linewidth = 0.5) +
              ggplot2::scale_color_manual(breaks = c(FALSE, TRUE),
                                          values = c("goldenrod3","turquoise4"),
                                          labels = c("Background", "Signal")
@@ -410,7 +410,7 @@ BBUM_plot = function(
                                    color = BBUM.fct,
                                    group = geneName
       )) +
-      ggplot2::geom_path(alpha = 0.3, size = 0.25) +
+      ggplot2::geom_path(alpha = 0.3, linewidth = 0.25) +
       ggplot2::geom_point(alpha = 0.6, shape = 16) +
       ggplot2::scale_color_manual(
         breaks = c("none","hit","outlier"),
@@ -419,11 +419,11 @@ BBUM_plot = function(
           "red3",
           "gray25"
         )) +
-      ggplot2::geom_vline(xintercept = 0, color = "black", size = 0.5,
+      ggplot2::geom_vline(xintercept = 0, color = "black", linewidth = 0.5,
                           linetype = "dashed") +
       ggplot2::geom_vline(xintercept = c(log10(pBBUM.alpha),
                                          -log10(pBBUM.alpha)),
-                          color = "salmon1", alpha = 0.5, size = 0.5,
+                          color = "salmon1", alpha = 0.5, linewidth = 0.5,
                           linetype = "dashed") +
       ggplot2::scale_x_continuous(breaks = pdir.breaks,
                                   labels = 10^-abs(pdir.breaks)) +
@@ -490,9 +490,9 @@ BBUM_plot = function(
       ggplot2::ggplot(ggplot2::aes(x = v_p.down.sample, y = v_p.up.sample,
                                    group = sampleid, color = primfrac.here)) +
       ggplot2::geom_abline(slope = 1, intercept = 0, color = "black",
-                           alpha = 0.5, size = 0.75, linetype = "dotted") +
+                           alpha = 0.5, linewidth = 0.75, linetype = "dotted") +
       ggplot2::geom_abline(slope = 1, intercept = c(-1,1), color = "black",
-                           alpha = 0.1, size = 0.75, linetype = "dotted") +
+                           alpha = 0.1, linewidth = 0.75, linetype = "dotted") +
       ggplot2::geom_point(alpha = 0.1, size = 1, shape = 16) +
       ggplot2::scale_color_gradient(low = "gray75", high = "red4",
                                     limits = c(0,1)) +
@@ -550,7 +550,7 @@ BBUM_plot = function(
              ggplot2::ggplot(ggplot2::aes(y = val, x = p,
                                           color = metric
              )) +
-             ggplot2::geom_line(alpha = 0.75, size = 0.5) +
+             ggplot2::geom_line(alpha = 0.75, linewidth = 0.5) +
              ggplot2::scale_color_manual(
                breaks = c("FDR","sensitivity","specificity"),
                values = c(
@@ -559,7 +559,7 @@ BBUM_plot = function(
                  "tan3"
                )) +
              ggplot2::geom_vline(xintercept = p_at_cutoff,
-                                 color = "mediumpurple4", alpha = 0.5, size = 0.5,
+                                 color = "mediumpurple4", alpha = 0.5, linewidth = 0.5,
                                  linetype = "dashed") +
              ggplot2::scale_x_continuous(trans = "log10") +
              ggplot2::coord_cartesian(xlim = c(down_lim,1)) +

@@ -17,7 +17,7 @@ rbbum(n, lambda, a, theta, r)
 rbbum.ID(n, lambda, a, theta, r)
 }
 \arguments{
-\item{x, q}{Vector of quantiles.}
+\item{x}{Vector of quantiles.}
 
 \item{lambda}{Vector of BBUM parameter \code{lambda}. \emph{lambda} is the
 fraction of null (uniform distribution density) over all density except the
@@ -34,6 +34,8 @@ of primary beta distribution density over all density.}
 shape parameter of the primary beta distribution over that of the secondary
 beta distribution. In other words, \code{a*r} is the shape parameter
 for the primary beta distribution component.}
+
+\item{q}{Vector of quantiles.}
 
 \item{n}{Number of observations.}
 }

@@ -82,6 +82,10 @@ Both sets should have at least 10 points each for modeling.
 A failed \code{r.pass} code is not
 triggered if \code{lambda} is too big for a reliable fitting of \code{a} to
 begin with.
+
+Due to the asymptotic behavior of the function when any
+p values = 0, any p values < \code{.Machine$double.xmin*10} would be
+constrained to \code{.Machine$double.xmin*10}.
 }
 \examples{
 BBUM_fit(

@@ -17,6 +17,9 @@
 #' @details A failed \code{r.pass} code is not
 #'   triggered if \code{lambda} is too big for a reliable fitting of \code{a} to
 #'   begin with.
+#' @details Due to the asymptotic behavior of the function when any
+#'   p values = 0, any p values < \code{.Machine$double.xmin*10} would be
+#'   constrained to \code{.Machine$double.xmin*10}.
 #'
 #' @param dt_signal_set,dt_bg_set Vectors of numerical p values, belonging to
 #'   the signal set and background set respectively.

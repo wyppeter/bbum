@@ -82,6 +82,9 @@
 #'   (despite a one-tailed assumption to begin with). This would allow the
 #'   generation of genuine FDR-corrected p values for the background class
 #'   points as well. Toggle this using the \code{two_tailed} value.
+#' @details Due to the asymptotic behavior of the function when any
+#'   p values = 0, any p values < \code{.Machine$double.xmin*10} would be
+#'   constrained to \code{.Machine$double.xmin*10}.
 #'
 #' @return A \code{tibble} based on the input results table, with added
 #'   columns from BBUM correction and significance calling:
