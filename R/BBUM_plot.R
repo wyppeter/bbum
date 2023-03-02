@@ -105,7 +105,7 @@ BBUM_plot = function(
   # Set up inputs ----
   plot.option = tolower(option[1])
   df.bbum = df.bbum %>%
-    ungroup() %>%
+    dplyr::ungroup() %>%
     dplyr::filter(!excluded)
   coefs = df.bbum %>%
     dplyr::select(BBUM.l, BBUM.a, BBUM.th, BBUM.r) %>%
