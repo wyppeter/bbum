@@ -149,11 +149,12 @@ documentation in the package:
 
 This package was created by Peter Y. Wang (@wyppeter) in David Bartel’s
 lab in the Whitehead Institute. For more details on the theoretical
-basis, usage, and benchmarking of the package, refer to the preprint at:
+basis, usage, and benchmarking of the package, refer to the paper at:
 
-> Wang PY, Bartel DP. 2022. A statistical approach for identifying
+> Wang PY, Bartel DP. 2023. A statistical approach for identifying
 > primary substrates of ZSWIM8-mediated microRNA degradation in
-> small-RNA sequencing data. *bioRxiv*. <doi:10.1101/2022.02.17.480958>
+> small-RNA sequencing data. *BMC Bioinformatics* **24**:195.
+> <doi:10.1186/s12859-023-05306-z>
 
 References:
 
